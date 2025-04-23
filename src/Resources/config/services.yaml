@@ -1,0 +1,14 @@
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+  WechatMiniProgramExpressBundle\AdminMenu: ~
+
+  WechatMiniProgramExpressBundle\Command\:
+    resource: '../../Command/'
+  WechatMiniProgramExpressBundle\Repository\:
+    resource: '../../Repository/'
+  WechatMiniProgramExpressBundle\Service\:
+    resource: '../../Service/'
