@@ -4,7 +4,6 @@ namespace WechatMiniProgramExpressBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use DoctrineEnhanceBundle\Repository\CommonRepositoryAware;
 use WechatMiniProgramExpressBundle\Entity\DeliveryCompany;
 
 /**
@@ -17,8 +16,6 @@ use WechatMiniProgramExpressBundle\Entity\DeliveryCompany;
  */
 class DeliveryCompanyRepository extends ServiceEntityRepository
 {
-    use CommonRepositoryAware;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, DeliveryCompany::class);
