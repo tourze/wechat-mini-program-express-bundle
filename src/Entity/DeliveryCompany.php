@@ -42,25 +42,6 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
 {
     use PrimaryKeyAware;
 
-    #[CreatedByColumn]
-    #[Groups(['restful_read'])]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[Groups(['restful_read'])]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
-
-    #[BoolColumn]
-    #[IndexColumn]
-    #[TrackColumn]
-    #[Groups(['admin_curd', 'restful_read', 'restful_read', 'restful_write'])]
-    #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '有效', 'default' => 0])]
-    #[ListColumn(order: 97)]
-    #[FormField(order: 97)]
-    private ?bool $valid = false;
-
     #[Groups(['admin_curd'])]
     #[TrackColumn]
     #[FormField(span: 18)]
@@ -77,6 +58,15 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
     #[ORM\Column(type: Types::STRING, length: 64, options: ['comment' => '配送公司名称'])]
     private ?string $deliveryName = null;
 
+    #[BoolColumn]
+    #[IndexColumn]
+    #[TrackColumn]
+    #[Groups(['admin_curd', 'restful_read', 'restful_read', 'restful_write'])]
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '有效', 'default' => 0])]
+    #[ListColumn(order: 97)]
+    #[FormField(order: 97)]
+    private ?bool $valid = false;
+
     #[CreateIpColumn]
     #[ORM\Column(length: 128, nullable: true, options: ['comment' => '创建时IP'])]
     private ?string $createdFromIp = null;
@@ -84,6 +74,16 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
     #[UpdateIpColumn]
     #[ORM\Column(length: 128, nullable: true, options: ['comment' => '更新时IP'])]
     private ?string $updatedFromIp = null;
+
+    #[CreatedByColumn]
+    #[Groups(['restful_read'])]
+    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
+    private ?string $createdBy = null;
+
+    #[UpdatedByColumn]
+    #[Groups(['restful_read'])]
+    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
+    private ?string $updatedBy = null;
 
     #[Filterable]
     #[IndexColumn]
