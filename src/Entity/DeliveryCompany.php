@@ -4,7 +4,6 @@ namespace WechatMiniProgramExpressBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use DoctrineEnhanceBundle\Traits\PrimaryKeyAware;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Tourze\Arrayable\AdminArrayInterface;
 use Tourze\Arrayable\ApiArrayInterface;
@@ -40,7 +39,17 @@ use WechatMiniProgramExpressBundle\Repository\DeliveryCompanyRepository;
 #[ORM\Table(name: 'wechat_mini_program_express_delivery_company', options: ['comment' => '即时配送公司'])]
 class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, ApiArrayInterface, AdminArrayInterface
 {
-    use PrimaryKeyAware;
+    #[ListColumn(order: -1)]
+    #[ExportColumn]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
+    private ?int $id = 0;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     #[Groups(['admin_curd'])]
     #[TrackColumn]
