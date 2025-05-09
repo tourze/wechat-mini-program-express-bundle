@@ -111,6 +111,14 @@ class AddOrderRequest extends WithAccountRequest
     }
 
     /**
+     * 获取商家ID
+     */
+    public function getShopId(): string
+    {
+        return $this->shopid;
+    }
+
+    /**
      * 设置商家订单ID
      */
     public function setShopOrderId(string $shop_order_id): self
@@ -118,6 +126,14 @@ class AddOrderRequest extends WithAccountRequest
         $this->shop_order_id = $shop_order_id;
 
         return $this;
+    }
+
+    /**
+     * 获取商家订单ID
+     */
+    public function getShopOrderId(): string
+    {
+        return $this->shop_order_id;
     }
 
     /**
@@ -131,6 +147,14 @@ class AddOrderRequest extends WithAccountRequest
     }
 
     /**
+     * 获取配送公司ID
+     */
+    public function getDeliveryId(): string
+    {
+        return $this->delivery_id;
+    }
+
+    /**
      * 设置商家门店编号
      */
     public function setShopNo(?string $shop_no): self
@@ -138,6 +162,14 @@ class AddOrderRequest extends WithAccountRequest
         $this->shop_no = $shop_no;
 
         return $this;
+    }
+
+    /**
+     * 获取商家门店编号
+     */
+    public function getShopNo(): ?string
+    {
+        return $this->shop_no;
     }
 
     /**
@@ -261,6 +293,11 @@ class AddOrderRequest extends WithAccountRequest
             $params['order_info'] = $this->orderInfo->toRequestArray();
         }
 
+        // 添加商品信息
+        if ($this->shop) {
+            $params['shop'] = $this->shop->toRequestArray();
+        }
+
         // 添加可选参数
         if ($this->shop_no) {
             $params['shop_no'] = $this->shop_no;
@@ -282,11 +319,38 @@ class AddOrderRequest extends WithAccountRequest
             $params['delivery_token'] = $this->delivery_token;
         }
 
-        // 添加商品信息
-        if ($this->shop) {
-            $params['shop'] = $this->shop->toRequestArray();
-        }
-
         return $params;
+    }
+
+    /**
+     * 获取请求路径，兼容测试
+     */
+    public function getPath(): string
+    {
+        return '/cgi-bin/express/local/business/order/add';
+    }
+
+    /**
+     * 获取API类型，兼容测试
+     */
+    public function getAppApiType(): string
+    {
+        return 'miniprogram';
+    }
+
+    /**
+     * 是否需要访问令牌，兼容测试
+     */
+    public function isRequireAccessToken(): bool
+    {
+        return true;
+    }
+
+    /**
+     * 转换为数组，兼容测试
+     */
+    public function toArray(): array
+    {
+        return $this->buildRequestParams();
     }
 }

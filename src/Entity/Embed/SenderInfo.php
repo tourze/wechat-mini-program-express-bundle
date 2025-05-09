@@ -188,6 +188,14 @@ class SenderInfo
     }
 
     /**
+     * 兼容测试，设置手机号，实际调用setPhone方法
+     */
+    public function setMobile(?string $mobile): self
+    {
+        return $this->setPhone($mobile);
+    }
+
+    /**
      * 从数组创建实例
      */
     public static function fromArray(array $data): self

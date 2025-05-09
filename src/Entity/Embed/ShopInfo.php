@@ -89,6 +89,14 @@ class ShopInfo
     }
 
     /**
+     * 兼容测试，设置微信小程序AppID，实际调用setWxaPath方法
+     */
+    public function setWechatAppId(?string $wechatAppId): self
+    {
+        return $this->setWxaPath($wechatAppId);
+    }
+
+    /**
      * 转换为API请求参数数组
      */
     public function toRequestArray(): array
