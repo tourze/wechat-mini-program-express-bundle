@@ -69,7 +69,7 @@ class DeliveryOrderService
             $this->entityManager->flush();
 
             return $response;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('预下单失败', [
                 'exception' => $e->getMessage(),
                 'params' => $order->toRequestArray(),
@@ -111,7 +111,7 @@ class DeliveryOrderService
             $this->entityManager->flush();
 
             return $response;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('下单失败', [
                 'exception' => $e->getMessage(),
                 'params' => $order->toRequestArray(),
@@ -149,7 +149,7 @@ class DeliveryOrderService
             $this->entityManager->flush();
 
             return $response;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('预取消订单失败', [
                 'exception' => $e->getMessage(),
                 'order_id' => $wechatOrderId,
@@ -191,7 +191,7 @@ class DeliveryOrderService
             $this->entityManager->flush();
 
             return $response;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('取消订单失败', [
                 'exception' => $e->getMessage(),
                 'order_id' => $wechatOrderId,
@@ -229,7 +229,7 @@ class DeliveryOrderService
             $this->entityManager->flush();
 
             return $response;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('重新下单失败', [
                 'exception' => $e->getMessage(),
                 'order_id' => $wechatOrderId,
@@ -268,7 +268,7 @@ class DeliveryOrderService
             $this->entityManager->flush();
 
             return $response;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('查询订单失败', [
                 'exception' => $e->getMessage(),
                 'order_id' => $wechatOrderId,
