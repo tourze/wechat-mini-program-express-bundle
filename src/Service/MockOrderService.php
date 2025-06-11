@@ -79,7 +79,7 @@ class MockOrderService
             $this->entityManager->flush();
 
             return $response;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('模拟更新配送单状态失败', [
                 'exception' => $e->getMessage(),
                 'order_id' => $wechatOrderId,
@@ -152,7 +152,7 @@ class MockOrderService
             }
 
             return $response;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('模拟配送公司更新配送单状态失败', [
                 'exception' => $e->getMessage(),
                 'shopid' => $shopId,

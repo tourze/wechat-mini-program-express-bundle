@@ -58,7 +58,7 @@ class OrderQueryService
             $this->entityManager->flush();
 
             return $response;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('查询订单失败', [
                 'exception' => $e->getMessage(),
                 'order_id' => $wechatOrderId,
@@ -133,7 +133,7 @@ class OrderQueryService
             $this->entityManager->flush();
 
             return $response;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('增加小费失败', [
                 'exception' => $e->getMessage(),
                 'order_id' => $wechatOrderId,
@@ -200,7 +200,7 @@ class OrderQueryService
             $this->entityManager->flush();
 
             return $response;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('确认异常件退回失败', [
                 'exception' => $e->getMessage(),
                 'order_id' => $wechatOrderId,
