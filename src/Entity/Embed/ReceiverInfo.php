@@ -171,7 +171,7 @@ class ReceiverInfo
     {
         $data = [
             'name' => $this->getName(),
-            'phone' => $this->getPhone(),
+            'mobile' => $this->getPhone(),
             'city' => $this->getCity(),
             'address' => $this->getAddress(),
             'address_detail' => $this->getAddressDetail(),

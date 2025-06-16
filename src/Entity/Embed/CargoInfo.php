@@ -62,10 +62,17 @@ class CargoInfo
     private ?float $goodsValue = null;
 
     /**
-     * 商品详情（JSON格式）
+     * 商品详情
      */
-    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '商品详情'])]
-    private ?array $goodsDetail = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '商品详情'])]
+    private ?string $goodsDetail = null;
+
+    /**
+     * 商品数量
+     */
+    #[TrackColumn]
+    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '商品数量'])]
+    private ?int $goodsCount = null;
 
     public function getCargoFirstClass(): ?string
     {
@@ -151,14 +158,26 @@ class CargoInfo
         return $this;
     }
 
-    public function getGoodsDetail(): ?array
+    public function getGoodsDetail(): ?string
     {
         return $this->goodsDetail;
     }
 
-    public function setGoodsDetail(?array $goodsDetail): self
+    public function setGoodsDetail(?string $goodsDetail): self
     {
         $this->goodsDetail = $goodsDetail;
+
+        return $this;
+    }
+
+    public function getGoodsCount(): ?int
+    {
+        return $this->goodsCount;
+    }
+
+    public function setGoodsCount(?int $goodsCount): self
+    {
+        $this->goodsCount = $goodsCount;
 
         return $this;
     }
@@ -180,6 +199,10 @@ class CargoInfo
 
         if (null !== $this->getGoodsDetail()) {
             $data['goods_detail'] = $this->getGoodsDetail();
+        }
+        
+        if (null !== $this->getGoodsCount()) {
+            $data['goods_count'] = $this->getGoodsCount();
         }
 
         return array_filter($data, fn ($value) => null !== $value);
@@ -222,6 +245,10 @@ class CargoInfo
 
         if (isset($data['goods_detail'])) {
             $info->setGoodsDetail($data['goods_detail']);
+        }
+        
+        if (isset($data['goods_count'])) {
+            $info->setGoodsCount((int) $data['goods_count']);
         }
 
         return $info;

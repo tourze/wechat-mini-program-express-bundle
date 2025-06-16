@@ -40,6 +40,13 @@ class ShopInfo
     #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => '商品小程序路径'])]
     private ?string $wxaPath = null;
 
+    /**
+     * 配送签名
+     */
+    #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => '配送签名'])]
+    private ?string $deliverySign = null;
+
     public function getGoodsName(): ?string
     {
         return $this->goodsName;
@@ -96,6 +103,18 @@ class ShopInfo
         return $this->setWxaPath($wechatAppId);
     }
 
+    public function getDeliverySign(): ?string
+    {
+        return $this->deliverySign;
+    }
+
+    public function setDeliverySign(?string $deliverySign): self
+    {
+        $this->deliverySign = $deliverySign;
+
+        return $this;
+    }
+
     /**
      * 转换为API请求参数数组
      */
@@ -107,6 +126,10 @@ class ShopInfo
             'img_url' => $this->getImgUrl(),
             'wxa_path' => $this->getWxaPath(),
         ];
+
+        if (null !== $this->getDeliverySign()) {
+            $data['delivery_sign'] = $this->getDeliverySign();
+        }
 
         return array_filter($data, fn ($value) => null !== $value);
     }
@@ -132,6 +155,10 @@ class ShopInfo
 
         if (isset($data['wxa_path'])) {
             $info->setWxaPath($data['wxa_path']);
+        }
+        
+        if (isset($data['delivery_sign'])) {
+            $info->setDeliverySign($data['delivery_sign']);
         }
 
         return $info;

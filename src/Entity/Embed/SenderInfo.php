@@ -171,7 +171,7 @@ class SenderInfo
     {
         $data = [
             'name' => $this->getName(),
-            'phone' => $this->getPhone(),
+            'mobile' => $this->getPhone(),
             'city' => $this->getCity(),
             'address' => $this->getAddress(),
             'address_detail' => $this->getAddressDetail(),
@@ -187,13 +187,6 @@ class SenderInfo
         return array_filter($data, fn ($value) => null !== $value);
     }
 
-    /**
-     * 兼容测试，设置手机号，实际调用setPhone方法
-     */
-    public function setMobile(?string $mobile): self
-    {
-        return $this->setPhone($mobile);
-    }
 
     /**
      * 从数组创建实例
