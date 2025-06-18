@@ -16,49 +16,42 @@ class CargoInfo
      * 一级分类
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '货物一级分类'])]
     private ?string $cargoFirstClass = null;
 
     /**
      * 二级分类
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '货物二级分类'])]
     private ?string $cargoSecondClass = null;
 
     /**
      * 货物高度，单位：cm
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物高度，单位：cm'])]
     private ?float $goodsHeight = null;
 
     /**
      * 货物长度，单位：cm
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物长度，单位：cm'])]
     private ?float $goodsLength = null;
 
     /**
      * 货物宽度，单位：cm
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物宽度，单位：cm'])]
     private ?float $goodsWidth = null;
 
     /**
      * 货物重量，单位：kg
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物重量，单位：kg'])]
     private ?float $goodsWeight = null;
 
     /**
      * 货物价格，单位：元
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物价格，单位：元'])]
     private ?float $goodsValue = null;
 
     /**
@@ -71,7 +64,6 @@ class CargoInfo
      * 商品数量
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '商品数量'])]
     private ?int $goodsCount = null;
 
     public function getCargoFirstClass(): ?string
@@ -215,39 +207,39 @@ class CargoInfo
     {
         $info = new self();
 
-        if (isset($data['cargo_first_class'])) {
+        if ((bool) isset($data['cargo_first_class'])) {
             $info->setCargoFirstClass($data['cargo_first_class']);
         }
 
-        if (isset($data['cargo_second_class'])) {
+        if ((bool) isset($data['cargo_second_class'])) {
             $info->setCargoSecondClass($data['cargo_second_class']);
         }
 
-        if (isset($data['goods_height'])) {
+        if ((bool) isset($data['goods_height'])) {
             $info->setGoodsHeight((float) $data['goods_height']);
         }
 
-        if (isset($data['goods_length'])) {
+        if ((bool) isset($data['goods_length'])) {
             $info->setGoodsLength((float) $data['goods_length']);
         }
 
-        if (isset($data['goods_width'])) {
+        if ((bool) isset($data['goods_width'])) {
             $info->setGoodsWidth((float) $data['goods_width']);
         }
 
-        if (isset($data['goods_weight'])) {
+        if ((bool) isset($data['goods_weight'])) {
             $info->setGoodsWeight((float) $data['goods_weight']);
         }
 
-        if (isset($data['goods_value'])) {
+        if ((bool) isset($data['goods_value'])) {
             $info->setGoodsValue((float) $data['goods_value']);
         }
 
-        if (isset($data['goods_detail'])) {
+        if ((bool) isset($data['goods_detail'])) {
             $info->setGoodsDetail($data['goods_detail']);
         }
         
-        if (isset($data['goods_count'])) {
+        if ((bool) isset($data['goods_count'])) {
             $info->setGoodsCount((int) $data['goods_count']);
         }
 

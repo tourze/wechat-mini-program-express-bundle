@@ -138,14 +138,14 @@ class MockOrderService
 
             // 尝试查找订单并记录请求数据
             $order = $this->orderRepository->findOneBy(['orderInfo.poiSeq' => $shopOrderId]);
-            if ($order) {
+            if ((bool) $order) {
                 $order->setRequestData($requestParams);
             }
 
             $response = $this->client->request($request);
 
             // 如果找到了订单，记录响应数据
-            if ($order) {
+            if ((bool) $order) {
                 $order->setResponseData($response);
                 $this->entityManager->persist($order);
                 $this->entityManager->flush();

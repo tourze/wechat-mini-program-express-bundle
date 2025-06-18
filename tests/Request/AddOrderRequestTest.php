@@ -160,8 +160,6 @@ class AddOrderRequestTest extends TestCase
         $this->request->setShopOrderId($shopOrderId);
 
         $requestArray = $this->request->toArray();
-
-        $this->assertIsArray($requestArray);
         $this->assertArrayHasKey('shopid', $requestArray);
         $this->assertArrayHasKey('shop_no', $requestArray);
         $this->assertArrayHasKey('delivery_id', $requestArray);

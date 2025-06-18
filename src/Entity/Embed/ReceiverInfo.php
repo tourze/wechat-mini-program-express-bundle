@@ -2,7 +2,6 @@
 
 namespace WechatMiniProgramExpressBundle\Entity\Embed;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 
@@ -16,56 +15,48 @@ class ReceiverInfo
      * 姓名
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '收件人姓名'])]
     private ?string $name = null;
 
     /**
      * 电话
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '收件人电话'])]
     private ?string $phone = null;
 
     /**
      * 城市
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '收件人城市'])]
     private ?string $city = null;
 
     /**
      * 地址
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '收件人地址'])]
     private ?string $address = null;
 
     /**
      * 地址详情
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '收件人地址详情'])]
     private ?string $addressDetail = null;
 
     /**
      * 经度
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '收件人坐标经度'])]
     private ?float $lng = null;
 
     /**
      * 纬度
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '收件人坐标纬度'])]
     private ?float $lat = null;
 
     /**
      * 坐标类型
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '坐标类型: 0=腾讯, 1=百度, 2=高德'])]
     private ?int $coordinateType = null;
 
     public function getName(): ?string
@@ -194,35 +185,35 @@ class ReceiverInfo
     {
         $info = new self();
 
-        if (isset($data['name'])) {
+        if ((bool) isset($data['name'])) {
             $info->setName($data['name']);
         }
 
-        if (isset($data['phone'])) {
+        if ((bool) isset($data['phone'])) {
             $info->setPhone($data['phone']);
         }
 
-        if (isset($data['city'])) {
+        if ((bool) isset($data['city'])) {
             $info->setCity($data['city']);
         }
 
-        if (isset($data['address'])) {
+        if ((bool) isset($data['address'])) {
             $info->setAddress($data['address']);
         }
 
-        if (isset($data['address_detail'])) {
+        if ((bool) isset($data['address_detail'])) {
             $info->setAddressDetail($data['address_detail']);
         }
 
-        if (isset($data['lng'])) {
+        if ((bool) isset($data['lng'])) {
             $info->setLng((float) $data['lng']);
         }
 
-        if (isset($data['lat'])) {
+        if ((bool) isset($data['lat'])) {
             $info->setLat((float) $data['lat']);
         }
 
-        if (isset($data['coordinate_type'])) {
+        if ((bool) isset($data['coordinate_type'])) {
             $info->setCoordinateType((int) $data['coordinate_type']);
         }
 

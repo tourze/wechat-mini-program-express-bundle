@@ -37,8 +37,6 @@ class DeliveryCompanyTest extends TestCase
         $this->deliveryCompany->setDeliveryName($deliveryName);
 
         $array = $this->deliveryCompany->toArray();
-
-        $this->assertIsArray($array);
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
         $this->assertSame($deliveryId, $array['deliveryId']);
@@ -54,8 +52,6 @@ class DeliveryCompanyTest extends TestCase
         $this->deliveryCompany->setDeliveryName($deliveryName);
 
         $array = $this->deliveryCompany->retrievePlainArray();
-
-        $this->assertIsArray($array);
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
         $this->assertSame($deliveryId, $array['deliveryId']);
@@ -71,8 +67,6 @@ class DeliveryCompanyTest extends TestCase
         $this->deliveryCompany->setDeliveryName($deliveryName);
 
         $array = $this->deliveryCompany->retrieveApiArray();
-
-        $this->assertIsArray($array);
         // 验证API数组中包含的字段
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
@@ -87,8 +81,6 @@ class DeliveryCompanyTest extends TestCase
         $this->deliveryCompany->setDeliveryName($deliveryName);
 
         $array = $this->deliveryCompany->retrieveAdminArray();
-
-        $this->assertIsArray($array);
         // 验证管理员数组中包含的字段
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);

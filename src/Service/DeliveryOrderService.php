@@ -55,11 +55,11 @@ class DeliveryOrderService
                    ->setOrderInfo($params['order_info']);
 
             // 设置可选参数
-            if (isset($params['shop_no'])) {
+            if ((bool) isset($params['shop_no'])) {
                 $request->setShopNo($params['shop_no']);
             }
 
-            if (isset($params['shop'])) {
+            if ((bool) isset($params['shop'])) {
                 $request->setShop($params['shop']);
             }
 
@@ -96,7 +96,7 @@ class DeliveryOrderService
                 ->setCargo($order->getCargoInfo())
                 ->setOrderInfo($order->getOrderInfo());
 
-            if (isset($requestParams['shop_no'])) {
+            if ((bool) isset($requestParams['shop_no'])) {
                 $request->setShopNo($requestParams['shop_no']);
             }
 

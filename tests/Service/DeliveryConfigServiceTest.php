@@ -102,7 +102,6 @@ class DeliveryConfigServiceTest extends TestCase
         $companies = $this->service->getAllDeliveryCompanies($this->account);
 
         // 断言结果
-        $this->assertIsArray($companies);
         $this->assertEmpty($companies);
     }
 
@@ -236,7 +235,6 @@ class DeliveryConfigServiceTest extends TestCase
         $bindAccounts = $this->service->getBindAccounts($this->account);
 
         // 断言结果
-        $this->assertIsArray($bindAccounts);
         $this->assertEmpty($bindAccounts);
     }
 

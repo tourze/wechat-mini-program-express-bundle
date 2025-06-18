@@ -144,10 +144,10 @@ class DeliveryConfigService
 
                 // 提取额外配置
                 $extraConfig = [];
-                if (isset($item['delivery_service'])) {
+                if ((bool) isset($item['delivery_service'])) {
                     $extraConfig['delivery_service'] = $item['delivery_service'];
                 }
-                if (isset($item['audit_result'])) {
+                if ((bool) isset($item['audit_result'])) {
                     $extraConfig['audit_result'] = $item['audit_result'];
                 }
                 if (!empty($extraConfig)) {

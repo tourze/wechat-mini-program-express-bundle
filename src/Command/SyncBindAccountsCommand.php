@@ -20,7 +20,9 @@ use WechatMiniProgramExpressBundle\Service\DeliveryConfigService;
 )]
 class SyncBindAccountsCommand extends Command
 {
-    public function __construct(
+    
+    public const NAME = 'wechat-express:sync-bind-accounts';
+public function __construct(
         private readonly DeliveryConfigService $configService,
         private readonly AccountRepository $accountRepository,
     ) {
@@ -38,7 +40,7 @@ class SyncBindAccountsCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $accountId = $input->getOption('account-id');
 
-        if ($accountId) {
+        if ((bool) $accountId) {
             $account = $this->accountRepository->find($accountId);
             if (!$account) {
                 $io->error("找不到ID为 {$accountId} 的微信小程序账号");
@@ -49,7 +51,7 @@ class SyncBindAccountsCommand extends Command
             $accounts = [$account];
         } else {
             $accounts = $this->accountRepository->findBy(['valid' => true]);
-            if (empty($accounts)) {
+            if ((bool) empty($accounts)) {
                 $io->warning('没有可用的微信小程序账号');
 
                 return Command::SUCCESS;

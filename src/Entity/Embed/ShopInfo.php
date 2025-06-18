@@ -2,7 +2,6 @@
 
 namespace WechatMiniProgramExpressBundle\Entity\Embed;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 
@@ -16,35 +15,30 @@ class ShopInfo
      * 商品名称
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => '商品名称'])]
     private ?string $goodsName = null;
 
     /**
      * 商品数量
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '商品数量'])]
     private ?int $goodsCount = null;
 
     /**
      * 商品图片链接
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '商品图片链接'])]
     private ?string $imgUrl = null;
 
     /**
      * 商品小程序路径
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => '商品小程序路径'])]
     private ?string $wxaPath = null;
 
     /**
      * 配送签名
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => '配送签名'])]
     private ?string $deliverySign = null;
 
     public function getGoodsName(): ?string
@@ -141,23 +135,23 @@ class ShopInfo
     {
         $info = new self();
 
-        if (isset($data['goods_name'])) {
+        if ((bool) isset($data['goods_name'])) {
             $info->setGoodsName($data['goods_name']);
         }
 
-        if (isset($data['goods_count'])) {
+        if ((bool) isset($data['goods_count'])) {
             $info->setGoodsCount((int) $data['goods_count']);
         }
 
-        if (isset($data['img_url'])) {
+        if ((bool) isset($data['img_url'])) {
             $info->setImgUrl($data['img_url']);
         }
 
-        if (isset($data['wxa_path'])) {
+        if ((bool) isset($data['wxa_path'])) {
             $info->setWxaPath($data['wxa_path']);
         }
         
-        if (isset($data['delivery_sign'])) {
+        if ((bool) isset($data['delivery_sign'])) {
             $info->setDeliverySign($data['delivery_sign']);
         }
 

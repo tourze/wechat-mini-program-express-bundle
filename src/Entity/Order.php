@@ -4,14 +4,11 @@ namespace WechatMiniProgramExpressBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\CreateTimeColumn;
 use Tourze\DoctrineTimestampBundle\Attribute\UpdateTimeColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use WechatMiniProgramExpressBundle\Entity\Embed\CargoInfo;
 use WechatMiniProgramExpressBundle\Entity\Embed\OrderInfo;
 use WechatMiniProgramExpressBundle\Entity\Embed\ReceiverInfo;
@@ -22,8 +19,8 @@ use WechatMiniProgramExpressBundle\Entity\Embed\ShopInfo;
  * 即时配送订单实体
  */
 #[ORM\Entity]
-#[ORM\Table(name: 'delivery_order')]
-class Order
+#[ORM\Table(name: 'delivery_order', options: ['comment' => '表描述'])]
+class Order implements Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -35,42 +32,36 @@ class Order
      * 微信 侧订单ID
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '微信侧订单ID'])]
     private ?string $wechatOrderId = null;
 
     /**
      * 配送单号
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '配送单号'])]
     private ?string $deliveryId = null;
 
     /**
      * 配送状态
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '配送状态'])]
     private ?string $status = null;
 
     /**
      * 配送费用（单位：元）
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true, options: ['comment' => '配送费用，单位：元'])]
     private ?string $fee = null;
 
     /**
      * 配送公司ID
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '配送公司ID'])]
     private ?string $deliveryCompanyId = null;
 
     /**
      * 账号绑定ID
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '账号绑定ID'])]
     private ?string $bindAccountId = null;
 
     /**
@@ -107,29 +98,20 @@ class Order
      * 原始请求数据
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '原始请求数据'])]
     private ?array $requestData = null;
 
     /**
      * 原始响应数据
      */
     #[TrackColumn]
-    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '原始响应数据'])]
     private ?array $responseData = null;
 
-    #[Filterable]
     #[IndexColumn]
-    #[ListColumn(order: 98, sorter: true)]
-    #[ExportColumn]
-    #[CreateTimeColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '创建时间'])]/**
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '创建时间'])]/**
      * @DateRangePickerField()
      */
     #[UpdateTimeColumn]
-    #[ListColumn(order: 99, sorter: true)]
-    #[Filterable]
-    #[ExportColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '更新时间'])]public function __construct()
+    public function __construct()
     {
         $this->senderInfo = new SenderInfo();
         $this->receiverInfo = new ReceiverInfo();
@@ -326,22 +308,27 @@ class Order
      */
     public function updateFromResponse(array $response): self
     {
-        if (isset($response['fee'])) {
+        if ((bool) isset($response['fee'])) {
             $this->setFee((string) $response['fee']);
         }
 
-        if (isset($response['order_id'])) {
+        if ((bool) isset($response['order_id'])) {
             $this->setWechatOrderId($response['order_id']);
         }
 
-        if (isset($response['delivery_id'])) {
+        if ((bool) isset($response['delivery_id'])) {
             $this->setDeliveryId($response['delivery_id']);
         }
 
-        if (isset($response['status'])) {
+        if ((bool) isset($response['status'])) {
             $this->setStatus($response['status']);
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->id;
     }
 }

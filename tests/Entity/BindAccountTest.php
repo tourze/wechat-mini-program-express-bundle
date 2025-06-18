@@ -59,8 +59,6 @@ class BindAccountTest extends TestCase
         $this->bindAccount->setExtraConfig($extraConfig);
 
         $array = $this->bindAccount->toArray();
-
-        $this->assertIsArray($array);
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
         $this->assertArrayHasKey('shopId', $array);
@@ -84,8 +82,6 @@ class BindAccountTest extends TestCase
         $this->bindAccount->setShopId($shopId);
 
         $array = $this->bindAccount->retrievePlainArray();
-
-        $this->assertIsArray($array);
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
         $this->assertSame($deliveryId, $array['deliveryId']);
@@ -102,8 +98,6 @@ class BindAccountTest extends TestCase
         $this->bindAccount->setShopId($shopId);
 
         $array = $this->bindAccount->retrieveApiArray();
-
-        $this->assertIsArray($array);
         // 验证API数组包含需要的字段
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
@@ -120,8 +114,6 @@ class BindAccountTest extends TestCase
         $this->bindAccount->setShopId($shopId);
 
         $array = $this->bindAccount->retrieveAdminArray();
-
-        $this->assertIsArray($array);
         // 验证管理员数组包含需要的字段
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
@@ -146,7 +138,6 @@ class BindAccountTest extends TestCase
         $this->assertArrayHasKey('complex_data', $retrievedConfig);
         $this->assertSame(1, $retrievedConfig['delivery_service']);
         $this->assertSame(2, $retrievedConfig['audit_result']);
-        $this->assertIsArray($retrievedConfig['complex_data']);
     }
 
     public function testStringable(): void
@@ -164,8 +155,6 @@ class BindAccountTest extends TestCase
         $this->bindAccount->setShopId($shopId);
         
         $string = (string) $this->bindAccount;
-        
-        $this->assertIsString($string);
         // 检查__toString方法是否将deliveryName和shopId组合起来
         $this->assertStringContainsString($deliveryName, $string);
         $this->assertStringContainsString($shopId, $string);
@@ -173,7 +162,7 @@ class BindAccountTest extends TestCase
 
     public function testTimestampMethods(): void
     {
-        $now = new \DateTime();
+        $now = new \DateTimeImmutable();
         
         $this->bindAccount->setCreateTime($now);
         $this->bindAccount->setUpdateTime($now);
