@@ -15,7 +15,7 @@ use WechatMiniProgramExpressBundle\Service\DeliveryConfigService;
  * 同步微信小程序即时配送绑定账号命令
  */
 #[AsCommand(
-    name: 'wechat-express:sync-bind-accounts',
+    name: self::NAME,
     description: '同步微信小程序即时配送绑定账号'
 )]
 class SyncBindAccountsCommand extends Command
