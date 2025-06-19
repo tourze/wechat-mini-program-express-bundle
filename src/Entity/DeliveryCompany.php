@@ -15,10 +15,8 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Action\Listable;
 use WechatMiniProgramExpressBundle\Repository\DeliveryCompanyRepository;
 
-#[Listable]
 #[ORM\Entity(repositoryClass: DeliveryCompanyRepository::class)]
 #[ORM\Table(name: 'wechat_mini_program_express_delivery_company', options: ['comment' => '即时配送公司'])]
 class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, ApiArrayInterface, AdminArrayInterface

@@ -15,11 +15,9 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Action\Listable;
 use WechatMiniProgramBundle\Entity\Account;
 use WechatMiniProgramExpressBundle\Repository\BindAccountRepository;
 
-#[Listable]
 #[ORM\Entity(repositoryClass: BindAccountRepository::class)]
 #[ORM\Table(name: 'wechat_mini_program_express_bind_account', options: ['comment' => '即时配送绑定账号'])]
 class BindAccount implements \Stringable, Arrayable, PlainArrayInterface, ApiArrayInterface, AdminArrayInterface
