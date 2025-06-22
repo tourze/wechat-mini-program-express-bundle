@@ -15,7 +15,7 @@ use WechatMiniProgramExpressBundle\Service\DeliveryConfigService;
  * 同步微信小程序即时配送公司命令
  */
 #[AsCommand(
-    name: 'wechat-express:sync-delivery-companies',
+    name: self::NAME,
     description: '同步微信小程序即时配送公司'
 )]
 class SyncDeliveryCompaniesCommand extends Command
@@ -42,7 +42,7 @@ public function __construct(
 
         if ((bool) $accountId) {
             $account = $this->accountRepository->find($accountId);
-            if (!$account) {
+            if ($account === null) {
                 $io->error("找不到ID为 {$accountId} 的微信小程序账号");
 
                 return Command::FAILURE;

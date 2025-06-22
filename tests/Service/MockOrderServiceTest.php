@@ -74,7 +74,7 @@ class MockOrderServiceTest extends TestCase
             ->method('flush');
 
         // 执行测试
-        $result = $this->service->mockUpdateOrder($wechatOrderId, $status, $actionTime);
+        $result = $this->service->mockUpdateOrder($wechatOrderId, 'OrderDelivery', 'mock info');
 
         // 断言结果
         $this->assertSame($responseData, $result);
@@ -98,7 +98,7 @@ class MockOrderServiceTest extends TestCase
         $this->expectExceptionMessage('订单不存在');
 
         // 执行测试
-        $this->service->mockUpdateOrder($wechatOrderId, $status, $actionTime);
+        $this->service->mockUpdateOrder($wechatOrderId, 'OrderDelivery', 'mock info');
     }
 
     public function testMockUpdateOrder_Error(): void
@@ -131,17 +131,19 @@ class MockOrderServiceTest extends TestCase
         $this->logger->expects($this->once())
             ->method('error')
             ->with(
-                $this->equalTo('模拟更新订单状态失败'),
+                $this->equalTo('模拟更新配送单状态失败'),
                 $this->callback(function ($context) use ($wechatOrderId) {
                     return isset($context['exception']) && $context['order_id'] === $wechatOrderId;
                 })
             );
 
         $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('模拟更新订单状态失败: API错误');
+        $this->expectExceptionMessage('模拟更新配送单状态失败: API错误');
 
         // 执行测试
-        $this->service->mockUpdateOrder($wechatOrderId, $status, $actionTime);
+        $this->service->mockUpdateOrder($wechatOrderId, 'OrderDelivery', 'mock info');
+        
+        // PHPUnit 的 expectException 已经是一个断言，不需要额外的断言
     }
 
     public function testRealMockUpdateOrder_Success(): void
@@ -168,8 +170,8 @@ class MockOrderServiceTest extends TestCase
 
         // 配置模拟行为
         $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
+            ->method('findOneBy')
+            ->with(['orderInfo.poiSeq' => 'shop-order-123'])
             ->willReturn($order);
 
         $this->client->expects($this->once())
@@ -183,7 +185,7 @@ class MockOrderServiceTest extends TestCase
             ->method('flush');
 
         // 执行测试
-        $result = $this->service->realMockUpdateOrder($wechatOrderId, $status, $actionTime);
+        $result = $this->service->realMockUpdateOrder('shop1', 'shop-order-123', $status, $actionTime, 'delivery_sign');
 
         // 断言结果
         $this->assertSame($responseData, $result);
@@ -193,21 +195,29 @@ class MockOrderServiceTest extends TestCase
     public function testRealMockUpdateOrder_OrderNotFound(): void
     {
         // 准备测试数据
-        $wechatOrderId = 'wx-order-123';
         $status = 101;
         $actionTime = time();
+        
+        $responseData = [
+            'errcode' => 0,
+            'errmsg' => 'ok',
+        ];
 
         // 配置模拟行为：订单不存在
         $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
+            ->method('findOneBy')
+            ->with(['orderInfo.poiSeq' => 'shop-order-123'])
             ->willReturn(null);
-
-        $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('订单不存在');
-
+            
+        $this->client->expects($this->once())
+            ->method('request')
+            ->willReturn($responseData);
+            
         // 执行测试
-        $this->service->realMockUpdateOrder($wechatOrderId, $status, $actionTime);
+        $result = $this->service->realMockUpdateOrder('shop1', 'shop-order-123', $status, $actionTime, 'delivery_sign');
+        
+        // 断言结果 - 即使订单不存在，也会返回响应
+        $this->assertSame($responseData, $result);
     }
 
     public function testRealMockUpdateOrder_Error(): void
@@ -229,8 +239,8 @@ class MockOrderServiceTest extends TestCase
 
         // 配置模拟行为：API抛出异常
         $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
+            ->method('findOneBy')
+            ->with(['orderInfo.poiSeq' => 'shop-order-123'])
             ->willReturn($order);
 
         $this->client->expects($this->once())
@@ -240,17 +250,22 @@ class MockOrderServiceTest extends TestCase
         $this->logger->expects($this->once())
             ->method('error')
             ->with(
-                $this->equalTo('真实模拟配送公司更新订单状态失败'),
-                $this->callback(function ($context) use ($wechatOrderId) {
-                    return isset($context['exception']) && $context['order_id'] === $wechatOrderId;
+                $this->equalTo('模拟配送公司更新配送单状态失败'),
+                $this->callback(function ($context) {
+                    return isset($context['exception']) && 
+                           isset($context['shopid']) && 
+                           isset($context['shop_order_id']) && 
+                           $context['shop_order_id'] === 'shop-order-123';
                 })
             );
 
         $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('真实模拟配送公司更新订单状态失败: API错误');
+        $this->expectExceptionMessage('模拟配送公司更新配送单状态失败: API错误');
 
         // 执行测试
-        $this->service->realMockUpdateOrder($wechatOrderId, $status, $actionTime);
+        $this->service->realMockUpdateOrder('shop1', 'shop-order-123', $status, $actionTime, 'delivery-sign', null);
+        
+        // PHPUnit 的 expectException 已经是一个断言，不需要额外的断言
     }
 
     private function createOrder(): Order

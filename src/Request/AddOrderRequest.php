@@ -274,48 +274,48 @@ class AddOrderRequest extends WithAccountRequest
         ];
 
         // 添加发件人信息
-        if ($this->sender) {
+        if ($this->sender !== null) {
             $params['sender'] = $this->sender->toRequestArray();
         }
 
         // 添加收件人信息
-        if ($this->receiver) {
+        if ($this->receiver !== null) {
             $params['receiver'] = $this->receiver->toRequestArray();
         }
 
         // 添加货物信息
-        if ($this->cargo) {
+        if ($this->cargo !== null) {
             $params['cargo'] = $this->cargo->toRequestArray();
         }
 
         // 添加订单信息
-        if ($this->orderInfo) {
+        if ($this->orderInfo !== null) {
             $params['order_info'] = $this->orderInfo->toRequestArray();
         }
 
         // 添加商品信息
-        if ($this->shop) {
+        if ($this->shop !== null) {
             $params['shop'] = $this->shop->toRequestArray();
         }
 
         // 添加可选参数
-        if ($this->shop_no) {
+        if ($this->shop_no !== null) {
             $params['shop_no'] = $this->shop_no;
         }
 
-        if ($this->openid) {
+        if ($this->openid !== null) {
             $params['openid'] = $this->openid;
         }
 
-        if ($this->sub_biz_id) {
+        if ($this->sub_biz_id !== null) {
             $params['sub_biz_id'] = $this->sub_biz_id;
         }
 
-        if ($this->delivery_sign) {
+        if ($this->delivery_sign !== null) {
             $params['delivery_sign'] = $this->delivery_sign;
         }
 
-        if ($this->delivery_token) {
+        if ($this->delivery_token !== null) {
             $params['delivery_token'] = $this->delivery_token;
         }
 

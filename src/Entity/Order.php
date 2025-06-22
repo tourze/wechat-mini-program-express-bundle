@@ -5,8 +5,6 @@ namespace WechatMiniProgramExpressBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
-use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\UpdateTimeColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use WechatMiniProgramExpressBundle\Entity\Embed\CargoInfo;
@@ -106,11 +104,6 @@ class Order implements Stringable
     #[TrackColumn]
     private ?array $responseData = null;
 
-    #[IndexColumn]
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '创建时间'])]/**
-     * @DateRangePickerField()
-     */
-    #[UpdateTimeColumn]
     public function __construct()
     {
         $this->senderInfo = new SenderInfo();

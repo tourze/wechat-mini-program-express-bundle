@@ -101,7 +101,6 @@ class DeliveryCompanyTest extends TestCase
         $this->deliveryCompany->setDeliveryName($deliveryName);
         
         // 测试__toString方法
-        $this->assertIsString((string) $this->deliveryCompany);
         $this->assertStringContainsString($deliveryName, (string) $this->deliveryCompany);
     }
 } 

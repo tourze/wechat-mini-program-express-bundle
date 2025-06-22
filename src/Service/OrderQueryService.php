@@ -35,7 +35,7 @@ class OrderQueryService
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if (!$order) {
+            if ($order === null) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -90,7 +90,7 @@ class OrderQueryService
     ): array {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if (!$order) {
+            if ($order === null) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -165,7 +165,7 @@ class OrderQueryService
     ): array {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if (!$order) {
+            if ($order === null) {
                 throw new DeliveryException('订单不存在');
             }
 

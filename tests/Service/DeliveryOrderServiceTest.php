@@ -402,8 +402,7 @@ class DeliveryOrderServiceTest extends TestCase
         // 发送方信息
         $sender = new SenderInfo();
         $sender->setName('发送方姓名');
-        $sender->setMobile('13800138001');
-        $sender->setCompany('发送方公司');
+        $sender->setPhone('13800138001');
         $sender->setAddress('发送方地址');
         $sender->setLat(39.98);
         $sender->setLng(116.35);
@@ -412,7 +411,7 @@ class DeliveryOrderServiceTest extends TestCase
         // 接收方信息
         $receiver = new ReceiverInfo();
         $receiver->setName('接收方姓名');
-        $receiver->setMobile('13800138002');
+        $receiver->setPhone('13800138002');
         $receiver->setAddress('接收方地址');
         $receiver->setLat(39.90);
         $receiver->setLng(116.40);

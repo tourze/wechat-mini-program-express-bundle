@@ -42,7 +42,7 @@ public function __construct(
 
         if ((bool) $accountId) {
             $account = $this->accountRepository->find($accountId);
-            if (!$account) {
+            if ($account === null) {
                 $io->error("找不到ID为 {$accountId} 的微信小程序账号");
 
                 return Command::FAILURE;

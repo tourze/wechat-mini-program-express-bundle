@@ -56,13 +56,13 @@ class DeliveryConfigService
                 $deliveryId = $item['delivery_id'] ?? null;
                 $deliveryName = $item['delivery_name'] ?? null;
 
-                if (!$deliveryId || !$deliveryName) {
+                if ($deliveryId === null || $deliveryName === null) {
                     continue;
                 }
 
                 // 检查是否已存在
                 $company = $this->deliveryCompanyRepository->findByDeliveryId($deliveryId);
-                if (!$company) {
+                if ($company === null) {
                     $company = new DeliveryCompany();
                     $company->setDeliveryId($deliveryId);
                 }
@@ -110,19 +110,19 @@ class DeliveryConfigService
                 $deliveryId = $item['delivery_id'] ?? null;
                 $shopId = $item['shopid'] ?? null;
 
-                if (!$deliveryId || !$shopId) {
+                if ($deliveryId === null || $shopId === null) {
                     continue;
                 }
 
                 // 获取配送公司
                 $company = $this->deliveryCompanyRepository->findByDeliveryId($deliveryId);
-                if (!$company) {
+                if ($company === null) {
                     // 如果配送公司不存在，尝试获取配送公司列表
                     $this->getAllDeliveryCompanies($account);
                     $company = $this->deliveryCompanyRepository->findByDeliveryId($deliveryId);
 
                     // 如果还是找不到，创建一个临时的
-                    if (!$company) {
+                    if ($company === null) {
                         $company = new DeliveryCompany();
                         $company->setDeliveryId($deliveryId);
                         $company->setDeliveryName($item['delivery_name'] ?? '未知配送公司');
@@ -132,7 +132,7 @@ class DeliveryConfigService
 
                 // 检查绑定账号是否已存在
                 $bindAccount = $this->bindAccountRepository->findByAccountAndDeliveryId($account, $deliveryId);
-                if (!$bindAccount) {
+                if ($bindAccount === null) {
                     $bindAccount = new BindAccount();
                     $bindAccount->setAccount($account);
                     $bindAccount->setDeliveryId($deliveryId);

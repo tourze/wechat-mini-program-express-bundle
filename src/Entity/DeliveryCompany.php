@@ -13,8 +13,7 @@ use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 use WechatMiniProgramExpressBundle\Repository\DeliveryCompanyRepository;
 
 #[ORM\Entity(repositoryClass: DeliveryCompanyRepository::class)]
@@ -22,6 +21,7 @@ use WechatMiniProgramExpressBundle\Repository\DeliveryCompanyRepository;
 class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, ApiArrayInterface, AdminArrayInterface
 {
     use TimestampableAware;
+    use BlameableAware;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
@@ -49,15 +49,10 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
     #[UpdateIpColumn]
     private ?string $updatedFromIp = null;
 
-    #[CreatedByColumn]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    private ?string $updatedBy = null;
 
     public function __toString(): string
     {
-        if (!$this->getId()) {
+        if ($this->getId() === null || $this->getId() === 0) {
             return '';
         }
 
@@ -148,26 +143,4 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
         return $this->updatedFromIp;
     }
 
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }}
+}

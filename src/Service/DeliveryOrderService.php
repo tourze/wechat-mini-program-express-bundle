@@ -100,9 +100,7 @@ class DeliveryOrderService
                 $request->setShopNo($requestParams['shop_no']);
             }
 
-            if ($shopInfo = $order->getShopInfo()) {
-                $request->setShop($shopInfo);
-            }
+            $request->setShop($order->getShopInfo());
 
             $response = $this->client->request($request);
             $order->setResponseData($response);
@@ -127,7 +125,7 @@ class DeliveryOrderService
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if (!$order) {
+            if ($order === null) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -165,7 +163,7 @@ class DeliveryOrderService
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if (!$order) {
+            if ($order === null) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -207,7 +205,7 @@ class DeliveryOrderService
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if (!$order) {
+            if ($order === null) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -245,7 +243,7 @@ class DeliveryOrderService
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if (!$order) {
+            if ($order === null) {
                 throw new DeliveryException('订单不存在');
             }
 
