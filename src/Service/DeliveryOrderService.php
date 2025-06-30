@@ -172,7 +172,7 @@ class DeliveryOrderService
                 'delivery_id' => $order->getDeliveryCompanyId(),
                 'shop_id' => $order->getBindAccountId(),
                 'cancel_reason_id' => 0,
-                'cancel_reason' => $reason ?: '商家取消',
+                'cancel_reason' => $reason !== '' ? $reason : '商家取消',
             ];
             $order->setRequestData($params);
 
@@ -181,7 +181,7 @@ class DeliveryOrderService
                    ->setDeliveryId($order->getDeliveryCompanyId())
                    ->setShopId($order->getBindAccountId())
                    ->setCancelReasonId(0)
-                   ->setCancelReason($reason ?: '商家取消');
+                   ->setCancelReason($reason !== '' ? $reason : '商家取消');
 
             $response = $this->client->request($request);
             $order->setResponseData($response);

@@ -40,28 +40,28 @@ class BindAccount implements \Stringable, Arrayable, PlainArrayInterface, ApiArr
     #[ORM\JoinColumn(name: 'account_id', referencedColumnName: 'id', onDelete: 'CASCADE', options: ['comment' => '微信小程序账号'])]
     private ?Account $account = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
     private ?string $deliveryId = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
     private ?string $deliveryName = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
     private ?string $shopId = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
     private ?string $shopNo = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
     #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => '商户秘钥'])]
     private ?string $appSecret = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '额外配置'])]
     private array $extraConfig = [];

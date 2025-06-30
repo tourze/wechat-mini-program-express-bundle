@@ -32,11 +32,11 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
         return $this->id;
     }
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
     private ?string $deliveryId = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
     private ?string $deliveryName = null;
 

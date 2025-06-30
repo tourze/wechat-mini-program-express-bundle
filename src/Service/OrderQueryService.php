@@ -97,9 +97,9 @@ class OrderQueryService
             $request = new AddTipsRequest();
             $request->setShopId($order->getBindAccountId())
                 ->setShopOrderId($order->getOrderInfo()->getPoiSeq())
-                ->setWaybillId($order->getDeliveryId() ?: '')
+                ->setWaybillId($order->getDeliveryId() ?? '')
                 ->setTips($tips)
-                ->setDeliverySign($deliverySign ?: '');
+                ->setDeliverySign($deliverySign ?? '');
 
             if (null !== $shopNo) {
                 $request->setShopNo($shopNo);
@@ -112,9 +112,9 @@ class OrderQueryService
             $requestParams = [
                 'shopid' => $order->getBindAccountId(),
                 'shop_order_id' => $order->getOrderInfo()->getPoiSeq(),
-                'waybill_id' => $order->getDeliveryId() ?: '',
+                'waybill_id' => $order->getDeliveryId() ?? '',
                 'tips' => $tips,
-                'delivery_sign' => $deliverySign ?: '',
+                'delivery_sign' => $deliverySign ?? '',
             ];
 
             if (null !== $shopNo) {
@@ -173,8 +173,8 @@ class OrderQueryService
             $request->setShopId($order->getBindAccountId())
                 ->setShopOrderId($order->getOrderInfo()->getPoiSeq())
                 ->setWaybillId($waybillId)
-                ->setDeliverySign($deliverySign ?: '')  // 安全码
-                ->setShopNo($shopNo ?: '');  // 商家门店编号
+                ->setDeliverySign($deliverySign ?? '')  // 安全码
+                ->setShopNo($shopNo ?? '');  // 商家门店编号
 
             if (null !== $remark) {
                 $request->setRemark($remark);
@@ -184,8 +184,8 @@ class OrderQueryService
                 'shopid' => $order->getBindAccountId(),
                 'shop_order_id' => $order->getOrderInfo()->getPoiSeq(),
                 'waybill_id' => $waybillId,
-                'delivery_sign' => $deliverySign ?: '',
-                'shop_no' => $shopNo ?: '',
+                'delivery_sign' => $deliverySign ?? '',
+                'shop_no' => $shopNo ?? '',
             ];
 
             if (null !== $remark) {
