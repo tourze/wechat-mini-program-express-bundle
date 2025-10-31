@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Stringable;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use WechatMiniProgramExpressBundle\Entity\Embed\CargoInfo;
@@ -18,90 +20,96 @@ use WechatMiniProgramExpressBundle\Entity\Embed\ShopInfo;
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'delivery_order', options: ['comment' => '表描述'])]
-class Order implements Stringable
+class Order implements \Stringable
 {
     use TimestampableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '订单ID'])]
     private ?int $id = null;
 
-    /**
-     * 微信 侧订单ID
-     */
     #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '微信侧订单ID'])]
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 255)]
     private ?string $wechatOrderId = null;
 
-    /**
-     * 配送单号
-     */
     #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '配送单号'])]
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 255)]
     private ?string $deliveryId = null;
 
-    /**
-     * 配送状态
-     */
     #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '配送状态'])]
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 255)]
     private ?string $status = null;
 
-    /**
-     * 配送费用（单位：元）
-     */
     #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '配送费用（单位：元）'])]
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 255)]
     private ?string $fee = null;
 
-    /**
-     * 配送公司ID
-     */
     #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '配送公司ID'])]
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 255)]
     private ?string $deliveryCompanyId = null;
 
-    /**
-     * 账号绑定ID
-     */
     #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '账号绑定ID'])]
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 255)]
     private ?string $bindAccountId = null;
 
     /**
      * 发送方信息
      */
     #[ORM\Embedded(class: SenderInfo::class)]
+    #[Assert\Valid]
     private SenderInfo $senderInfo;
 
     /**
      * 接收方信息
      */
     #[ORM\Embedded(class: ReceiverInfo::class)]
+    #[Assert\Valid]
     private ReceiverInfo $receiverInfo;
 
     /**
      * 货物信息
      */
     #[ORM\Embedded(class: CargoInfo::class)]
+    #[Assert\Valid]
     private CargoInfo $cargoInfo;
 
     /**
      * 订单信息
      */
     #[ORM\Embedded(class: OrderInfo::class)]
+    #[Assert\Valid]
     private OrderInfo $orderInfo;
 
     /**
      * 商品信息
      */
     #[ORM\Embedded(class: ShopInfo::class)]
+    #[Assert\Valid]
     private ShopInfo $shopInfo;
 
-    /**
-     * 原始请求数据
-     */
+    /** @var array<string, mixed>|null */
     #[TrackColumn]
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '原始请求数据'])]
+    #[Assert\Type(type: 'array')]
     private ?array $requestData = null;
 
-    /**
-     * 原始响应数据
-     */
+    /** @var array<string, mixed>|null */
     #[TrackColumn]
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '原始响应数据'])]
+    #[Assert\Type(type: 'array')]
     private ?array $responseData = null;
 
     public function __construct()
@@ -123,11 +131,9 @@ class Order implements Stringable
         return $this->wechatOrderId;
     }
 
-    public function setWechatOrderId(?string $wechatOrderId): self
+    public function setWechatOrderId(?string $wechatOrderId): void
     {
         $this->wechatOrderId = $wechatOrderId;
-
-        return $this;
     }
 
     public function getDeliveryId(): ?string
@@ -135,11 +141,9 @@ class Order implements Stringable
         return $this->deliveryId;
     }
 
-    public function setDeliveryId(?string $deliveryId): self
+    public function setDeliveryId(?string $deliveryId): void
     {
         $this->deliveryId = $deliveryId;
-
-        return $this;
     }
 
     public function getStatus(): ?string
@@ -147,11 +151,9 @@ class Order implements Stringable
         return $this->status;
     }
 
-    public function setStatus(?string $status): self
+    public function setStatus(?string $status): void
     {
         $this->status = $status;
-
-        return $this;
     }
 
     public function getFee(): ?string
@@ -159,11 +161,9 @@ class Order implements Stringable
         return $this->fee;
     }
 
-    public function setFee(?string $fee): self
+    public function setFee(?string $fee): void
     {
         $this->fee = $fee;
-
-        return $this;
     }
 
     public function getDeliveryCompanyId(): ?string
@@ -171,11 +171,9 @@ class Order implements Stringable
         return $this->deliveryCompanyId;
     }
 
-    public function setDeliveryCompanyId(?string $deliveryCompanyId): self
+    public function setDeliveryCompanyId(?string $deliveryCompanyId): void
     {
         $this->deliveryCompanyId = $deliveryCompanyId;
-
-        return $this;
     }
 
     public function getBindAccountId(): ?string
@@ -183,11 +181,9 @@ class Order implements Stringable
         return $this->bindAccountId;
     }
 
-    public function setBindAccountId(?string $bindAccountId): self
+    public function setBindAccountId(?string $bindAccountId): void
     {
         $this->bindAccountId = $bindAccountId;
-
-        return $this;
     }
 
     public function getSenderInfo(): SenderInfo
@@ -195,11 +191,9 @@ class Order implements Stringable
         return $this->senderInfo;
     }
 
-    public function setSenderInfo(SenderInfo $senderInfo): self
+    public function setSenderInfo(SenderInfo $senderInfo): void
     {
         $this->senderInfo = $senderInfo;
-
-        return $this;
     }
 
     public function getReceiverInfo(): ReceiverInfo
@@ -207,11 +201,9 @@ class Order implements Stringable
         return $this->receiverInfo;
     }
 
-    public function setReceiverInfo(ReceiverInfo $receiverInfo): self
+    public function setReceiverInfo(ReceiverInfo $receiverInfo): void
     {
         $this->receiverInfo = $receiverInfo;
-
-        return $this;
     }
 
     public function getCargoInfo(): CargoInfo
@@ -219,11 +211,9 @@ class Order implements Stringable
         return $this->cargoInfo;
     }
 
-    public function setCargoInfo(CargoInfo $cargoInfo): self
+    public function setCargoInfo(CargoInfo $cargoInfo): void
     {
         $this->cargoInfo = $cargoInfo;
-
-        return $this;
     }
 
     public function getOrderInfo(): OrderInfo
@@ -231,11 +221,9 @@ class Order implements Stringable
         return $this->orderInfo;
     }
 
-    public function setOrderInfo(OrderInfo $orderInfo): self
+    public function setOrderInfo(OrderInfo $orderInfo): void
     {
         $this->orderInfo = $orderInfo;
-
-        return $this;
     }
 
     public function getShopInfo(): ShopInfo
@@ -243,37 +231,47 @@ class Order implements Stringable
         return $this->shopInfo;
     }
 
-    public function setShopInfo(ShopInfo $shopInfo): self
+    public function setShopInfo(ShopInfo $shopInfo): void
     {
         $this->shopInfo = $shopInfo;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestData(): ?array
     {
         return $this->requestData;
     }
 
-    public function setRequestData(?array $requestData): self
+    /**
+     * @param array<string, mixed>|null $requestData
+     */
+    public function setRequestData(?array $requestData): void
     {
         $this->requestData = $requestData;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getResponseData(): ?array
     {
         return $this->responseData;
     }
 
-    public function setResponseData(?array $responseData): self
+    /**
+     * @param array<mixed, mixed>|null $responseData
+     */
+    public function setResponseData(?array $responseData): void
     {
         $this->responseData = $responseData;
+    }
 
-        return $this;
-    }/**
+    /**
      * 转换为创建订单请求参数
+     *
+     * @return array<string, mixed>
      */
     public function toRequestArray(): array
     {
@@ -289,7 +287,7 @@ class Order implements Stringable
         ];
 
         $shopInfo = $this->getShopInfo()->toRequestArray();
-        if (!empty($shopInfo)) {
+        if ([] !== $shopInfo) {
             $request['shop'] = $shopInfo;
         }
 
@@ -298,26 +296,57 @@ class Order implements Stringable
 
     /**
      * 从响应数据更新订单状态
+     *
+     * @param array<mixed, mixed> $response
      */
     public function updateFromResponse(array $response): self
     {
-        if ((bool) isset($response['fee'])) {
-            $this->setFee((string) $response['fee']);
-        }
-
-        if ((bool) isset($response['order_id'])) {
-            $this->setWechatOrderId($response['order_id']);
-        }
-
-        if ((bool) isset($response['delivery_id'])) {
-            $this->setDeliveryId($response['delivery_id']);
-        }
-
-        if ((bool) isset($response['status'])) {
-            $this->setStatus($response['status']);
-        }
+        $this->setFeeFromResponse($response);
+        $this->setWechatOrderIdFromResponse($response);
+        $this->setDeliveryIdFromResponse($response);
+        $this->setStatusFromResponse($response);
 
         return $this;
+    }
+
+    /**
+     * @param array<mixed, mixed> $response
+     */
+    private function setFeeFromResponse(array $response): void
+    {
+        if (isset($response['fee'])) {
+            $this->setFee(is_scalar($response['fee']) ? (string) $response['fee'] : null);
+        }
+    }
+
+    /**
+     * @param array<mixed, mixed> $response
+     */
+    private function setWechatOrderIdFromResponse(array $response): void
+    {
+        if (isset($response['order_id'])) {
+            $this->setWechatOrderId(is_scalar($response['order_id']) ? (string) $response['order_id'] : null);
+        }
+    }
+
+    /**
+     * @param array<mixed, mixed> $response
+     */
+    private function setDeliveryIdFromResponse(array $response): void
+    {
+        if (isset($response['delivery_id'])) {
+            $this->setDeliveryId(is_scalar($response['delivery_id']) ? (string) $response['delivery_id'] : null);
+        }
+    }
+
+    /**
+     * @param array<mixed, mixed> $response
+     */
+    private function setStatusFromResponse(array $response): void
+    {
+        if (isset($response['status'])) {
+            $this->setStatus(is_scalar($response['status']) ? (string) $response['status'] : null);
+        }
     }
 
     public function __toString(): string

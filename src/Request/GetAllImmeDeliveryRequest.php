@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Request;
 
 use WechatMiniProgramBundle\Request\WithAccountRequest;

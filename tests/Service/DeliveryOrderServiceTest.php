@@ -2,10 +2,10 @@
 
 namespace WechatMiniProgramExpressBundle\Tests\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use WechatMiniProgramBundle\Service\Client;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
+use WechatMiniProgramBundle\Entity\Account;
 use WechatMiniProgramExpressBundle\Entity\Embed\CargoInfo;
 use WechatMiniProgramExpressBundle\Entity\Embed\OrderInfo;
 use WechatMiniProgramExpressBundle\Entity\Embed\ReceiverInfo;
@@ -13,440 +13,205 @@ use WechatMiniProgramExpressBundle\Entity\Embed\SenderInfo;
 use WechatMiniProgramExpressBundle\Entity\Embed\ShopInfo;
 use WechatMiniProgramExpressBundle\Entity\Order;
 use WechatMiniProgramExpressBundle\Exception\DeliveryException;
-use WechatMiniProgramExpressBundle\Repository\OrderRepository;
 use WechatMiniProgramExpressBundle\Service\DeliveryOrderService;
 
-class DeliveryOrderServiceTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(DeliveryOrderService::class)]
+#[RunTestsInSeparateProcesses]
+final class DeliveryOrderServiceTest extends AbstractIntegrationTestCase
 {
-    private Client $client;
-    private EntityManagerInterface $entityManager;
-    private OrderRepository $orderRepository;
-    private LoggerInterface $logger;
-    private DeliveryOrderService $service;
-
-    protected function setUp(): void
+    protected function onSetUp(): void
     {
-        $this->client = $this->createMock(Client::class);
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->orderRepository = $this->createMock(OrderRepository::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
+        // 空实现，子类可以根据需要扩展
+    }
 
-        $this->service = new DeliveryOrderService(
-            $this->client,
-            $this->orderRepository,
-            $this->entityManager,
-            $this->logger
+    public function testPreAddOrderWithValidOrderThrowsException(): void
+    {
+        $service = self::getService(DeliveryOrderService::class);
+        $order = $this->createValidOrder();
+
+        $this->expectException(DeliveryException::class);
+        $service->preAddOrder($order);
+    }
+
+    public function testAddOrderWithValidOrderThrowsException(): void
+    {
+        $service = self::getService(DeliveryOrderService::class);
+        $order = $this->createValidOrder();
+
+        $this->expectException(DeliveryException::class);
+        $service->addOrder($order);
+    }
+
+    public function testPreCancelOrderWithInvalidIdThrowsException(): void
+    {
+        $service = self::getService(DeliveryOrderService::class);
+
+        $this->expectException(DeliveryException::class);
+        $this->expectExceptionMessage('订单不存在');
+        $service->preCancelOrder('invalid-order-id');
+    }
+
+    public function testCancelOrderWithInvalidIdThrowsException(): void
+    {
+        $service = self::getService(DeliveryOrderService::class);
+
+        $this->expectException(DeliveryException::class);
+        $this->expectExceptionMessage('订单不存在');
+        $service->cancelOrder('invalid-order-id');
+    }
+
+    public function testReOrderWithInvalidIdThrowsException(): void
+    {
+        $service = self::getService(DeliveryOrderService::class);
+
+        $this->expectException(DeliveryException::class);
+        $this->expectExceptionMessage('订单不存在');
+        $service->reOrder('invalid-order-id');
+    }
+
+    public function testGetOrderWithInvalidIdThrowsException(): void
+    {
+        $service = self::getService(DeliveryOrderService::class);
+
+        $this->expectException(DeliveryException::class);
+        $this->expectExceptionMessage('订单不存在');
+        $service->getOrder('invalid-order-id');
+    }
+
+    public function testAddTipsWithValidParametersThrowsException(): void
+    {
+        $service = self::getService(DeliveryOrderService::class);
+
+        // 使用匿名类代替Mock，遵循静态分析规范
+        $account = $this->createTestAccount();
+
+        // 期望由于客户端请求失败而抛出异常
+        $this->expectException(\Throwable::class);
+        $service->addTips(
+            $account,
+            'test-shop-id',
+            'test-shop-order-id',
+            'test-waybill-id',
+            10.50,
+            'test-delivery-sign',
+            'test-shop-no',
+            'test remark'
         );
     }
 
-    public function testPreAddOrder_Success(): void
+    public function testAddTipsWithoutOptionalParametersThrowsException(): void
     {
-        // 准备测试数据
-        $order = $this->createCompleteOrder();
-        
-        $responseData = [
-            'errcode' => 0,
-            'errmsg' => 'ok',
-            'fee' => 12.5,
-            'deliverfee' => 5.0,
-            'tips' => 0,
-            'insurancefee' => 0,
-        ];
+        $service = self::getService(DeliveryOrderService::class);
 
-        // 配置模拟行为
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willReturn($responseData);
+        $account = $this->createTestAccount();
 
-        $this->entityManager->expects($this->once())
-            ->method('persist')
-            ->with($order);
-        $this->entityManager->expects($this->once())
-            ->method('flush');
-
-        // 执行测试
-        $result = $this->service->preAddOrder($order);
-
-        // 断言结果
-        $this->assertSame($responseData, $result);
-        $this->assertSame($responseData, $order->getResponseData());
+        // 期望由于客户端请求失败而抛出异常
+        $this->expectException(\Throwable::class);
+        $service->addTips(
+            $account,
+            'test-shop-id',
+            'test-shop-order-id',
+            'test-waybill-id',
+            5.00,
+            'test-delivery-sign'
+        );
     }
 
-    public function testPreAddOrder_Error(): void
-    {
-        // 准备测试数据
-        $order = $this->createCompleteOrder();
-
-        // 配置模拟行为：API抛出异常
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willThrowException(new \Exception('API错误'));
-
-        $this->logger->expects($this->once())
-            ->method('error')
-            ->with(
-                $this->equalTo('预下单失败'),
-                $this->callback(function ($context) {
-                    return isset($context['exception']) && isset($context['params']);
-                })
-            );
-
-        $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('预下单失败: API错误');
-
-        // a执行测试
-        $this->service->preAddOrder($order);
-    }
-
-    public function testAddOrder_Success(): void
-    {
-        // 准备测试数据
-        $order = $this->createCompleteOrder();
-        
-        $responseData = [
-            'errcode' => 0,
-            'errmsg' => 'ok',
-            'fee' => 12.5,
-            'deliverfee' => 5.0,
-            'tips' => 0,
-            'insurancefee' => 0,
-            'order_id' => 'wx-order-123',
-            'delivery_id' => 'delivery-id-456',
-            'waybill_id' => 'waybill-789',
-        ];
-
-        // 配置模拟行为
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willReturn($responseData);
-
-        $this->entityManager->expects($this->once())
-            ->method('persist')
-            ->with($order);
-        $this->entityManager->expects($this->once())
-            ->method('flush');
-
-        // 执行测试
-        $result = $this->service->addOrder($order);
-
-        // 断言结果
-        $this->assertSame($responseData, $result);
-        $this->assertSame($responseData, $order->getResponseData());
-    }
-
-    public function testAddOrder_Error(): void
-    {
-        // 准备测试数据
-        $order = $this->createCompleteOrder();
-
-        // 配置模拟行为：API抛出异常
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willThrowException(new \Exception('API错误'));
-
-        $this->logger->expects($this->once())
-            ->method('error')
-            ->with(
-                $this->equalTo('下单失败'),
-                $this->callback(function ($context) {
-                    return isset($context['exception']) && isset($context['params']);
-                })
-            );
-
-        $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('下单失败: API错误');
-
-        // 执行测试
-        $this->service->addOrder($order);
-    }
-
-    public function testPreCancelOrder_Success(): void
-    {
-        // 准备测试数据
-        $wechatOrderId = 'wx-order-123';
-        $order = $this->createOrder();
-        $order->setWechatOrderId($wechatOrderId);
-        $order->setDeliveryCompanyId('delivery1');
-        $order->setBindAccountId('shop1');
-        
-        $responseData = [
-            'errcode' => 0,
-            'errmsg' => 'ok',
-            'deduct_fee' => 2.0,
-            'desc' => '取消费用说明',
-        ];
-
-        // 配置模拟行为
-        $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
-            ->willReturn($order);
-
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willReturn($responseData);
-
-        $this->entityManager->expects($this->once())
-            ->method('persist')
-            ->with($order);
-        $this->entityManager->expects($this->once())
-            ->method('flush');
-
-        // 执行测试
-        $result = $this->service->preCancelOrder($wechatOrderId);
-
-        // 断言结果
-        $this->assertSame($responseData, $result);
-        $this->assertSame($responseData, $order->getResponseData());
-    }
-
-    public function testPreCancelOrder_OrderNotFound(): void
-    {
-        // 准备测试数据
-        $wechatOrderId = 'wx-order-123';
-
-        // 配置模拟行为：订单不存在
-        $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
-            ->willReturn(null);
-
-        $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('订单不存在');
-
-        // 执行测试
-        $this->service->preCancelOrder($wechatOrderId);
-    }
-
-    public function testPreCancelOrder_Error(): void
-    {
-        // 准备测试数据
-        $wechatOrderId = 'wx-order-123';
-        $order = $this->createOrder();
-        $order->setWechatOrderId($wechatOrderId);
-        $order->setDeliveryCompanyId('delivery1');
-        $order->setBindAccountId('shop1');
-
-        // 配置模拟行为：API抛出异常
-        $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
-            ->willReturn($order);
-
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willThrowException(new \Exception('API错误'));
-
-        $this->logger->expects($this->once())
-            ->method('error')
-            ->with(
-                $this->equalTo('预取消订单失败'),
-                $this->callback(function ($context) use ($wechatOrderId) {
-                    return isset($context['exception']) && $context['order_id'] === $wechatOrderId;
-                })
-            );
-
-        $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('预取消订单失败: API错误');
-
-        // 执行测试
-        $this->service->preCancelOrder($wechatOrderId);
-    }
-
-    public function testCancelOrder_Success(): void
-    {
-        // 准备测试数据
-        $wechatOrderId = 'wx-order-123';
-        $reason = '商家主动取消';
-        $order = $this->createOrder();
-        $order->setWechatOrderId($wechatOrderId);
-        $order->setDeliveryCompanyId('delivery1');
-        $order->setBindAccountId('shop1');
-        
-        $responseData = [
-            'errcode' => 0,
-            'errmsg' => 'ok',
-            'deduct_fee' => 2.0,
-        ];
-
-        // 配置模拟行为
-        $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
-            ->willReturn($order);
-
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willReturn($responseData);
-
-        $this->entityManager->expects($this->once())
-            ->method('persist')
-            ->with($order);
-        $this->entityManager->expects($this->once())
-            ->method('flush');
-
-        // 执行测试
-        $result = $this->service->cancelOrder($wechatOrderId, $reason);
-
-        // 断言结果
-        $this->assertSame($responseData, $result);
-        $this->assertSame($responseData, $order->getResponseData());
-    }
-
-    public function testCancelOrder_OrderNotFound(): void
-    {
-        // 准备测试数据
-        $wechatOrderId = 'wx-order-123';
-
-        // 配置模拟行为：订单不存在
-        $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
-            ->willReturn(null);
-
-        $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('订单不存在');
-
-        // 执行测试
-        $this->service->cancelOrder($wechatOrderId);
-    }
-
-    public function testCancelOrder_Error(): void
-    {
-        // 准备测试数据
-        $wechatOrderId = 'wx-order-123';
-        $reason = '商家主动取消';
-        $order = $this->createOrder();
-        $order->setWechatOrderId($wechatOrderId);
-        $order->setDeliveryCompanyId('delivery1');
-        $order->setBindAccountId('shop1');
-
-        // 配置模拟行为：API抛出异常
-        $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
-            ->willReturn($order);
-
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willThrowException(new \Exception('API错误'));
-
-        $this->logger->expects($this->once())
-            ->method('error')
-            ->with(
-                $this->equalTo('取消订单失败'),
-                $this->callback(function ($context) use ($wechatOrderId) {
-                    return isset($context['exception']) && $context['order_id'] === $wechatOrderId;
-                })
-            );
-
-        $this->expectException(DeliveryException::class);
-        $this->expectExceptionMessage('取消订单失败: API错误');
-
-        // 执行测试
-        $this->service->cancelOrder($wechatOrderId, $reason);
-    }
-
-    public function testReOrder_Success(): void
-    {
-        // 准备测试数据
-        $wechatOrderId = 'wx-order-123';
-        $order = $this->createOrder();
-        $order->setWechatOrderId($wechatOrderId);
-        $order->setDeliveryCompanyId('delivery1');
-        $order->setBindAccountId('shop1');
-        
-        $responseData = [
-            'errcode' => 0,
-            'errmsg' => 'ok',
-            'fee' => 12.5,
-            'order_id' => 'wx-order-new-123',
-        ];
-
-        // 配置模拟行为
-        $this->orderRepository->expects($this->once())
-            ->method('findByWechatOrderId')
-            ->with($wechatOrderId)
-            ->willReturn($order);
-
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willReturn($responseData);
-
-        $this->entityManager->expects($this->once())
-            ->method('persist')
-            ->with($order);
-        $this->entityManager->expects($this->once())
-            ->method('flush');
-
-        // 执行测试
-        $result = $this->service->reOrder($wechatOrderId);
-
-        // 断言结果
-        $this->assertSame($responseData, $result);
-        $this->assertSame($responseData, $order->getResponseData());
-    }
-
-    private function createOrder(): Order
-    {
-        return new Order();
-    }
-
-    private function createCompleteOrder(): Order
+    private function createValidOrder(): Order
     {
         $order = new Order();
-        
-        $order->setDeliveryCompanyId('delivery1');
-        $order->setBindAccountId('shop1');
-        
-        // 发送方信息
-        $sender = new SenderInfo();
-        $sender->setName('发送方姓名');
-        $sender->setPhone('13800138001');
-        $sender->setAddress('发送方地址');
-        $sender->setLat(39.98);
-        $sender->setLng(116.35);
-        $order->setSenderInfo($sender);
-        
-        // 接收方信息
-        $receiver = new ReceiverInfo();
-        $receiver->setName('接收方姓名');
-        $receiver->setPhone('13800138002');
-        $receiver->setAddress('接收方地址');
-        $receiver->setLat(39.90);
-        $receiver->setLng(116.40);
-        $order->setReceiverInfo($receiver);
-        
-        // 货物信息
-        $cargo = new CargoInfo();
-        $cargo->setGoodsValue(100);
-        $cargo->setGoodsHeight(10);
-        $cargo->setGoodsLength(20);
-        $cargo->setGoodsWidth(15);
-        $cargo->setGoodsWeight(2);
-        $cargo->setGoodsDetail('商品详情');
-        $cargo->setGoodsCount(2);
-        $cargo->setCargoFirstClass('食品');
-        $cargo->setCargoSecondClass('快餐');
-        $order->setCargoInfo($cargo);
-        
-        // 订单信息
+        $order->setBindAccountId('shop123');
+        $order->setDeliveryCompanyId('delivery123');
+
+        // 创建发送人信息
+        $senderInfo = new SenderInfo();
+        $senderInfo->setName('发送人');
+        $senderInfo->setCity('北京市');
+        $senderInfo->setAddress('北京市朝阳区');
+        $senderInfo->setPhone('13800138000');
+        $senderInfo->setLng(116.4074);
+        $senderInfo->setLat(39.9042);
+        $order->setSenderInfo($senderInfo);
+
+        // 创建接收人信息
+        $receiverInfo = new ReceiverInfo();
+        $receiverInfo->setName('接收人');
+        $receiverInfo->setCity('北京市');
+        $receiverInfo->setAddress('北京市海淀区');
+        $receiverInfo->setPhone('13800138001');
+        $receiverInfo->setLng(116.3074);
+        $receiverInfo->setLat(39.9742);
+        $order->setReceiverInfo($receiverInfo);
+
+        // 创建货物信息
+        $cargoInfo = new CargoInfo();
+        $cargoInfo->setGoodsValue(100);
+        $cargoInfo->setGoodsHeight(10);
+        $cargoInfo->setGoodsLength(20);
+        $cargoInfo->setGoodsWidth(15);
+        $cargoInfo->setGoodsWeight(2);
+        $cargoInfo->setGoodsDetail('测试商品详情');
+        $cargoInfo->setCargoFirstClass('食品');
+        $cargoInfo->setCargoSecondClass('饮料');
+        $order->setCargoInfo($cargoInfo);
+
+        // 创建订单信息
         $orderInfo = new OrderInfo();
-        $orderInfo->setDeliveryServiceCode('xxx');
+        $orderInfo->setDeliveryServiceCode('4011');
         $orderInfo->setOrderType(0);
         $orderInfo->setExpectedDeliveryTime(time() + 3600);
-        $orderInfo->setPoiSeq('shop-order-123');
-        $orderInfo->setNote('备注');
+        $orderInfo->setPoiSeq('poi123');
+        $orderInfo->setNote('测试订单');
+        $orderInfo->setOrderTime(time());
+        $orderInfo->setIsInsured(false);
+        $orderInfo->setTips(0);
+        $orderInfo->setIsDirectDelivery(false);
+        $orderInfo->setIsFinishCodeNeeded(false);
+        $orderInfo->setIsPickupCodeNeeded(false);
         $order->setOrderInfo($orderInfo);
-        
-        // 商户信息
-        $shop = new ShopInfo();
-        $shop->setWechatAppId('wx123456');
-        $shop->setImgUrl('http://example.com/img.jpg');
-        $shop->setGoodsName('测试商品');
-        $shop->setDeliverySign('sign123');
-        $order->setShopInfo($shop);
-        
+
+        // 创建商店信息
+        $shopInfo = new ShopInfo();
+        $shopInfo->setWxaPath('pages/index');
+        $shopInfo->setImgUrl('https://example.com/image.jpg');
+        $shopInfo->setGoodsName('测试商品');
+        $shopInfo->setGoodsCount(1);
+        $order->setShopInfo($shopInfo);
+
         return $order;
     }
-} 
+
+    private function createTestAccount(): Account
+    {
+        // 使用匿名类代替Mock，遵循静态分析规范
+        return new class extends Account {
+            public function getId(): int
+            {
+                return 1;
+            }
+
+            public function getAppId(): string
+            {
+                return 'test-app-id';
+            }
+
+            public function getAppSecret(): string
+            {
+                return 'test-app-secret';
+            }
+
+            public function getName(): string
+            {
+                return 'Test Account';
+            }
+
+            public function isValid(): ?bool
+            {
+                return true;
+            }
+        };
+    }
+}

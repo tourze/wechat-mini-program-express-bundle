@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use WechatMiniProgramBundle\Entity\Account;
@@ -23,19 +26,22 @@ use WechatMiniProgramExpressBundle\Request\ReOrderRequest;
  *
  * 负责配送订单的创建和修改操作
  */
-#[Autoconfigure(lazy: true, public: true)]
-class DeliveryOrderService
+#[Autoconfigure(public: true)]
+#[WithMonologChannel(channel: 'wechat_mini_program_express')]
+readonly class DeliveryOrderService
 {
     public function __construct(
-        private readonly Client $client,
-        private readonly OrderRepository $orderRepository,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger,
+        private Client $client,
+        private OrderRepository $orderRepository,
+        private EntityManagerInterface $entityManager,
+        private LoggerInterface $logger,
     ) {
     }
 
     /**
      * 预下单（获取配送费）
+     *
+     * @return array<string, mixed>
      */
     public function preAddOrder(Order $order): array
     {
@@ -44,31 +50,16 @@ class DeliveryOrderService
             $order->setRequestData($params);
 
             $request = new PreAddOrderRequest();
-
-            // 设置各项参数
-            $request->setShopId($params['shopid'])
-                   ->setDeliveryId($params['delivery_id'])
-                   ->setShopOrderId($params['shop_order_id'])
-                   ->setSender($params['sender'])
-                   ->setReceiver($params['receiver'])
-                   ->setCargo($params['cargo'])
-                   ->setOrderInfo($params['order_info']);
-
-            // 设置可选参数
-            if ((bool) isset($params['shop_no'])) {
-                $request->setShopNo($params['shop_no']);
-            }
-
-            if ((bool) isset($params['shop'])) {
-                $request->setShop($params['shop']);
-            }
+            $this->populatePreAddOrderRequest($request, $params);
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('预下单失败', [
                 'exception' => $e->getMessage(),
@@ -79,7 +70,90 @@ class DeliveryOrderService
     }
 
     /**
+     * 填充预下单请求参数
+     *
+     * @param array<string, mixed> $params
+     */
+    private function populatePreAddOrderRequest(PreAddOrderRequest $request, array $params): void
+    {
+        $this->setRequiredParameters($request, $params);
+        $this->setOptionalParameters($request, $params);
+    }
+
+    /**
+     * 设置必需参数
+     *
+     * @param array<string, mixed> $params
+     */
+    private function setRequiredParameters(PreAddOrderRequest $request, array $params): void
+    {
+        $shopId = $params['shopid'] ?? null;
+        $deliveryId = $params['delivery_id'] ?? null;
+        $shopOrderId = $params['shop_order_id'] ?? null;
+        $sender = $params['sender'] ?? null;
+        $receiver = $params['receiver'] ?? null;
+        $cargo = $params['cargo'] ?? null;
+        $orderInfo = $params['order_info'] ?? null;
+
+        if (is_string($shopId)) {
+            $request->setShopId($shopId);
+        }
+        if (is_string($deliveryId)) {
+            $request->setDeliveryId($deliveryId);
+        }
+        if (is_string($shopOrderId)) {
+            $request->setShopOrderId($shopOrderId);
+        }
+        if (is_array($sender)) {
+            $request->setSender($this->convertToStringKeyedArray($sender));
+        }
+        if (is_array($receiver)) {
+            $request->setReceiver($this->convertToStringKeyedArray($receiver));
+        }
+        if (is_array($cargo)) {
+            $request->setCargo($this->convertToStringKeyedArray($cargo));
+        }
+        if (is_array($orderInfo)) {
+            $request->setOrderInfo($this->convertToStringKeyedArray($orderInfo));
+        }
+    }
+
+    /**
+     * 设置可选参数
+     *
+     * @param array<string, mixed> $params
+     */
+    private function setOptionalParameters(PreAddOrderRequest $request, array $params): void
+    {
+        if (isset($params['shop_no']) && is_string($params['shop_no'])) {
+            $request->setShopNo($params['shop_no']);
+        }
+
+        if (isset($params['shop']) && is_array($params['shop'])) {
+            $request->setShop($this->convertToStringKeyedArray($params['shop']));
+        }
+    }
+
+    /**
+     * 转换为字符串键值的数组
+     *
+     * @param array<mixed, mixed> $array
+     * @return array<string, mixed>
+     */
+    private function convertToStringKeyedArray(array $array): array
+    {
+        $result = [];
+        foreach ($array as $key => $value) {
+            $result[(string) $key] = $value;
+        }
+
+        return $result;
+    }
+
+    /**
      * 下单（真实创建订单）
+     *
+     * @return array<string, mixed>
      */
     public function addOrder(Order $order): array
     {
@@ -88,27 +162,41 @@ class DeliveryOrderService
             $order->setRequestData($requestParams);
 
             $request = new AddOrderRequest();
-            $request->setShopId($requestParams['shopid'])
-                ->setDeliveryId($requestParams['delivery_id'])
-                ->setShopOrderId($requestParams['shop_order_id'])
-                ->setSender($order->getSenderInfo())
-                ->setReceiver($order->getReceiverInfo())
-                ->setCargo($order->getCargoInfo())
-                ->setOrderInfo($order->getOrderInfo());
 
-            if ((bool) isset($requestParams['shop_no'])) {
+            $shopId = $requestParams['shopid'] ?? null;
+            $deliveryId = $requestParams['delivery_id'] ?? null;
+            $shopOrderId = $requestParams['shop_order_id'] ?? null;
+
+            if (is_string($shopId)) {
+                $request->setShopId($shopId);
+            }
+            if (is_string($deliveryId)) {
+                $request->setDeliveryId($deliveryId);
+            }
+            if (is_string($shopOrderId)) {
+                $request->setShopOrderId($shopOrderId);
+            }
+
+            $request->setSender($order->getSenderInfo());
+            $request->setReceiver($order->getReceiverInfo());
+            $request->setCargo($order->getCargoInfo());
+            $request->setOrderInfo($order->getOrderInfo());
+
+            if (isset($requestParams['shop_no']) && is_string($requestParams['shop_no'])) {
                 $request->setShopNo($requestParams['shop_no']);
             }
 
             $request->setShop($order->getShopInfo());
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
-            $order->updateFromResponse($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+                $order->updateFromResponse($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('下单失败', [
                 'exception' => $e->getMessage(),
@@ -120,12 +208,14 @@ class DeliveryOrderService
 
     /**
      * 预取消订单（获取取消费用）
+     *
+     * @return array<string, mixed>
      */
     public function preCancelOrder(string $wechatOrderId): array
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if ($order === null) {
+            if (null === $order) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -136,17 +226,26 @@ class DeliveryOrderService
             ];
             $order->setRequestData($params);
 
+            $deliveryId = $order->getDeliveryCompanyId();
+            $shopId = $order->getBindAccountId();
+
+            if (null === $deliveryId || null === $shopId) {
+                throw new DeliveryException('订单配送公司ID或商家ID不能为空');
+            }
+
             $request = new PreCancelOrderRequest();
-            $request->setOrderId($wechatOrderId)
-                   ->setDeliveryId($order->getDeliveryCompanyId())
-                   ->setShopId($order->getBindAccountId());
+            $request->setOrderId($wechatOrderId);
+            $request->setDeliveryId($deliveryId);
+            $request->setShopId($shopId);
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('预取消订单失败', [
                 'exception' => $e->getMessage(),
@@ -158,12 +257,14 @@ class DeliveryOrderService
 
     /**
      * 取消订单
+     *
+     * @return array<string, mixed>
      */
     public function cancelOrder(string $wechatOrderId, string $reason = ''): array
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if ($order === null) {
+            if (null === $order) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -172,23 +273,32 @@ class DeliveryOrderService
                 'delivery_id' => $order->getDeliveryCompanyId(),
                 'shop_id' => $order->getBindAccountId(),
                 'cancel_reason_id' => 0,
-                'cancel_reason' => $reason !== '' ? $reason : '商家取消',
+                'cancel_reason' => '' !== $reason ? $reason : '商家取消',
             ];
             $order->setRequestData($params);
 
+            $deliveryId = $order->getDeliveryCompanyId();
+            $shopId = $order->getBindAccountId();
+
+            if (null === $deliveryId || null === $shopId) {
+                throw new DeliveryException('订单配送公司ID或商家ID不能为空');
+            }
+
             $request = new CancelOrderRequest();
-            $request->setOrderId($wechatOrderId)
-                   ->setDeliveryId($order->getDeliveryCompanyId())
-                   ->setShopId($order->getBindAccountId())
-                   ->setCancelReasonId(0)
-                   ->setCancelReason($reason !== '' ? $reason : '商家取消');
+            $request->setOrderId($wechatOrderId);
+            $request->setDeliveryId($deliveryId);
+            $request->setShopId($shopId);
+            $request->setCancelReasonId(0);
+            $request->setCancelReason('' !== $reason ? $reason : '商家取消');
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('取消订单失败', [
                 'exception' => $e->getMessage(),
@@ -200,12 +310,14 @@ class DeliveryOrderService
 
     /**
      * 重新下单
+     *
+     * @return array<string, mixed>
      */
     public function reOrder(string $wechatOrderId): array
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if ($order === null) {
+            if (null === $order) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -216,17 +328,26 @@ class DeliveryOrderService
             ];
             $order->setRequestData($params);
 
+            $deliveryId = $order->getDeliveryCompanyId();
+            $shopId = $order->getBindAccountId();
+
+            if (null === $deliveryId || null === $shopId) {
+                throw new DeliveryException('订单配送公司ID或商家ID不能为空');
+            }
+
             $request = new ReOrderRequest();
-            $request->setOrderId($wechatOrderId)
-                   ->setDeliveryId($order->getDeliveryCompanyId())
-                   ->setShopId($order->getBindAccountId());
+            $request->setOrderId($wechatOrderId);
+            $request->setDeliveryId($deliveryId);
+            $request->setShopId($shopId);
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('重新下单失败', [
                 'exception' => $e->getMessage(),
@@ -238,12 +359,14 @@ class DeliveryOrderService
 
     /**
      * 查询订单
+     *
+     * @return array<string, mixed>
      */
     public function getOrder(string $wechatOrderId): array
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if ($order === null) {
+            if (null === $order) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -254,18 +377,27 @@ class DeliveryOrderService
             ];
             $order->setRequestData($params);
 
+            $deliveryId = $order->getDeliveryCompanyId();
+            $shopId = $order->getBindAccountId();
+
+            if (null === $deliveryId || null === $shopId) {
+                throw new DeliveryException('订单配送公司ID或商家ID不能为空');
+            }
+
             $request = new GetOrderRequest();
-            $request->setOrderId($wechatOrderId)
-                   ->setDeliveryId($order->getDeliveryCompanyId())
-                   ->setShopId($order->getBindAccountId());
+            $request->setOrderId($wechatOrderId);
+            $request->setDeliveryId($deliveryId);
+            $request->setShopId($shopId);
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
-            $order->updateFromResponse($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+                $order->updateFromResponse($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('查询订单失败', [
                 'exception' => $e->getMessage(),
@@ -290,6 +422,8 @@ class DeliveryOrderService
      * @param string|null $shop_no       商家门店编号
      * @param string|null $remark        备注信息
      *
+     * @return array<string, mixed>
+     *
      * @see https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/immediate-delivery/deliver-by-business/addTips.html
      */
     public function addTips(
@@ -305,11 +439,11 @@ class DeliveryOrderService
         try {
             $request = new AddTipsRequest();
             $request->setAccount($account);
-            $request->setShopId($shopid)
-                   ->setShopOrderId($shop_order_id)
-                   ->setWaybillId($waybill_id)
-                   ->setTips($tips)
-                   ->setDeliverySign($delivery_sign);
+            $request->setShopId($shopid);
+            $request->setShopOrderId($shop_order_id);
+            $request->setWaybillId($waybill_id);
+            $request->setTips($tips);
+            $request->setDeliverySign($delivery_sign);
 
             if (null !== $shop_no) {
                 $request->setShopNo($shop_no);
@@ -319,7 +453,9 @@ class DeliveryOrderService
                 $request->setRemark($remark);
             }
 
-            return $this->client->request($request);
+            $response = $this->client->request($request);
+
+            return is_array($response) ? $response : [];
         } catch (\Throwable $exception) {
             $this->logger->error('增加小费失败', [
                 'exception' => $exception,

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use WechatMiniProgramBundle\Service\Client;
@@ -17,25 +20,28 @@ use WechatMiniProgramExpressBundle\Request\GetOrderRequest;
  *
  * 负责配送订单的查询和异常处理
  */
-#[Autoconfigure(lazy: true, public: true)]
-class OrderQueryService
+#[Autoconfigure(public: true)]
+#[WithMonologChannel(channel: 'wechat_mini_program_express')]
+readonly class OrderQueryService
 {
     public function __construct(
-        private readonly Client $client,
-        private readonly OrderRepository $orderRepository,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger,
+        private Client $client,
+        private OrderRepository $orderRepository,
+        private EntityManagerInterface $entityManager,
+        private LoggerInterface $logger,
     ) {
     }
 
     /**
      * 查询订单
+     *
+     * @return array<string, mixed>
      */
     public function getOrder(string $wechatOrderId): array
     {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if ($order === null) {
+            if (null === $order) {
                 throw new DeliveryException('订单不存在');
             }
 
@@ -46,18 +52,27 @@ class OrderQueryService
             ];
             $order->setRequestData($params);
 
+            $deliveryId = $order->getDeliveryCompanyId();
+            $shopId = $order->getBindAccountId();
+
+            if (null === $deliveryId || null === $shopId) {
+                throw new DeliveryException('订单配送公司ID或商家ID不能为空');
+            }
+
             $request = new GetOrderRequest();
-            $request->setOrderId($wechatOrderId)
-                ->setDeliveryId($order->getDeliveryCompanyId())
-                ->setShopId($order->getBindAccountId());
+            $request->setOrderId($wechatOrderId);
+            $request->setDeliveryId($deliveryId);
+            $request->setShopId($shopId);
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
-            $order->updateFromResponse($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+                $order->updateFromResponse($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('查询订单失败', [
                 'exception' => $e->getMessage(),
@@ -79,6 +94,8 @@ class OrderQueryService
      * @param string|null $deliverySign  配送公司安全码
      * @param string|null $shopNo        商家门店编号
      *
+     * @return array<string, mixed>
+     *
      * @see https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/immediate-delivery/deliver-by-business/addTips.html
      */
     public function addTips(
@@ -90,16 +107,23 @@ class OrderQueryService
     ): array {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if ($order === null) {
+            if (null === $order) {
                 throw new DeliveryException('订单不存在');
             }
 
+            $shopId = $order->getBindAccountId();
+            $poiSeq = $order->getOrderInfo()->getPoiSeq();
+
+            if (null === $shopId || null === $poiSeq) {
+                throw new DeliveryException('订单商家ID或商家订单号不能为空');
+            }
+
             $request = new AddTipsRequest();
-            $request->setShopId($order->getBindAccountId())
-                ->setShopOrderId($order->getOrderInfo()->getPoiSeq())
-                ->setWaybillId($order->getDeliveryId() ?? '')
-                ->setTips($tips)
-                ->setDeliverySign($deliverySign ?? '');
+            $request->setShopId($shopId);
+            $request->setShopOrderId($poiSeq);
+            $request->setWaybillId($order->getDeliveryId() ?? '');
+            $request->setTips($tips);
+            $request->setDeliverySign($deliverySign ?? '');
 
             if (null !== $shopNo) {
                 $request->setShopNo($shopNo);
@@ -110,8 +134,8 @@ class OrderQueryService
             }
 
             $requestParams = [
-                'shopid' => $order->getBindAccountId(),
-                'shop_order_id' => $order->getOrderInfo()->getPoiSeq(),
+                'shopid' => $shopId,
+                'shop_order_id' => $poiSeq,
                 'waybill_id' => $order->getDeliveryId() ?? '',
                 'tips' => $tips,
                 'delivery_sign' => $deliverySign ?? '',
@@ -128,11 +152,13 @@ class OrderQueryService
             $order->setRequestData($requestParams);
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('增加小费失败', [
                 'exception' => $e->getMessage(),
@@ -154,6 +180,8 @@ class OrderQueryService
      * @param string|null $deliverySign  配送公司安全码
      * @param string|null $shopNo        商家门店编号
      *
+     * @return array<string, mixed>
+     *
      * @see https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/immediate-delivery/deliver-by-business/abnormalConfirm.html
      */
     public function confirmAbnormalReturn(
@@ -165,24 +193,31 @@ class OrderQueryService
     ): array {
         try {
             $order = $this->orderRepository->findByWechatOrderId($wechatOrderId);
-            if ($order === null) {
+            if (null === $order) {
                 throw new DeliveryException('订单不存在');
             }
 
+            $shopId = $order->getBindAccountId();
+            $poiSeq = $order->getOrderInfo()->getPoiSeq();
+
+            if (null === $shopId || null === $poiSeq) {
+                throw new DeliveryException('订单商家ID或商家订单号不能为空');
+            }
+
             $request = new AbnormalConfirmRequest();
-            $request->setShopId($order->getBindAccountId())
-                ->setShopOrderId($order->getOrderInfo()->getPoiSeq())
-                ->setWaybillId($waybillId)
-                ->setDeliverySign($deliverySign ?? '')  // 安全码
-                ->setShopNo($shopNo ?? '');  // 商家门店编号
+            $request->setShopId($shopId);
+            $request->setShopOrderId($poiSeq);
+            $request->setWaybillId($waybillId);
+            $request->setDeliverySign($deliverySign ?? '');  // 安全码
+            $request->setShopNo($shopNo ?? '');  // 商家门店编号
 
             if (null !== $remark) {
                 $request->setRemark($remark);
             }
 
             $requestParams = [
-                'shopid' => $order->getBindAccountId(),
-                'shop_order_id' => $order->getOrderInfo()->getPoiSeq(),
+                'shopid' => $shopId,
+                'shop_order_id' => $poiSeq,
                 'waybill_id' => $waybillId,
                 'delivery_sign' => $deliverySign ?? '',
                 'shop_no' => $shopNo ?? '',
@@ -195,11 +230,13 @@ class OrderQueryService
             $order->setRequestData($requestParams);
 
             $response = $this->client->request($request);
-            $order->setResponseData($response);
+            if (is_array($response)) {
+                $order->setResponseData($response);
+            }
             $this->entityManager->persist($order);
             $this->entityManager->flush();
 
-            return $response;
+            return is_array($response) ? $response : [];
         } catch (\Throwable $e) {
             $this->logger->error('确认异常件退回失败', [
                 'exception' => $e->getMessage(),

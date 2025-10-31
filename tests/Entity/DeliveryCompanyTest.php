@@ -2,30 +2,32 @@
 
 namespace WechatMiniProgramExpressBundle\Tests\Entity;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use WechatMiniProgramExpressBundle\Entity\DeliveryCompany;
 
-class DeliveryCompanyTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(DeliveryCompany::class)]
+final class DeliveryCompanyTest extends AbstractEntityTestCase
 {
-    private DeliveryCompany $deliveryCompany;
-
-    protected function setUp(): void
+    protected function createEntity(): DeliveryCompany
     {
-        $this->deliveryCompany = new DeliveryCompany();
+        return new DeliveryCompany();
     }
 
-    public function testGettersAndSetters(): void
+    /**
+     * @return iterable<string, array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
     {
-        $deliveryId = 'test-delivery-id';
-        $deliveryName = '测试配送公司';
-
-        $this->deliveryCompany->setDeliveryId($deliveryId);
-        $this->deliveryCompany->setDeliveryName($deliveryName);
-        $this->deliveryCompany->setValid(true);
-
-        $this->assertSame($deliveryId, $this->deliveryCompany->getDeliveryId());
-        $this->assertSame($deliveryName, $this->deliveryCompany->getDeliveryName());
-        $this->assertTrue($this->deliveryCompany->isValid());
+        return [
+            'deliveryId' => ['deliveryId', 'test-delivery-id'],
+            'deliveryName' => ['deliveryName', '测试配送公司'],
+            'valid' => ['valid', true],
+        ];
     }
 
     public function testToArray(): void
@@ -33,10 +35,11 @@ class DeliveryCompanyTest extends TestCase
         $deliveryId = 'test-delivery-id';
         $deliveryName = '测试配送公司';
 
-        $this->deliveryCompany->setDeliveryId($deliveryId);
-        $this->deliveryCompany->setDeliveryName($deliveryName);
+        $entity = $this->createEntity();
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
 
-        $array = $this->deliveryCompany->toArray();
+        $array = $entity->toArray();
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
         $this->assertSame($deliveryId, $array['deliveryId']);
@@ -48,10 +51,11 @@ class DeliveryCompanyTest extends TestCase
         $deliveryId = 'test-delivery-id';
         $deliveryName = '测试配送公司';
 
-        $this->deliveryCompany->setDeliveryId($deliveryId);
-        $this->deliveryCompany->setDeliveryName($deliveryName);
+        $entity = $this->createEntity();
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
 
-        $array = $this->deliveryCompany->retrievePlainArray();
+        $array = $entity->retrievePlainArray();
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
         $this->assertSame($deliveryId, $array['deliveryId']);
@@ -63,10 +67,11 @@ class DeliveryCompanyTest extends TestCase
         $deliveryId = 'test-delivery-id';
         $deliveryName = '测试配送公司';
 
-        $this->deliveryCompany->setDeliveryId($deliveryId);
-        $this->deliveryCompany->setDeliveryName($deliveryName);
+        $entity = $this->createEntity();
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
 
-        $array = $this->deliveryCompany->retrieveApiArray();
+        $array = $entity->retrieveApiArray();
         // 验证API数组中包含的字段
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
@@ -77,10 +82,11 @@ class DeliveryCompanyTest extends TestCase
         $deliveryId = 'test-delivery-id';
         $deliveryName = '测试配送公司';
 
-        $this->deliveryCompany->setDeliveryId($deliveryId);
-        $this->deliveryCompany->setDeliveryName($deliveryName);
+        $entity = $this->createEntity();
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
 
-        $array = $this->deliveryCompany->retrieveAdminArray();
+        $array = $entity->retrieveAdminArray();
         // 验证管理员数组中包含的字段
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
@@ -95,12 +101,13 @@ class DeliveryCompanyTest extends TestCase
         $reflectionClass = new \ReflectionClass(DeliveryCompany::class);
         $idProperty = $reflectionClass->getProperty('id');
         $idProperty->setAccessible(true);
-        $idProperty->setValue($this->deliveryCompany, 1);
+        $entity = $this->createEntity();
+        $idProperty->setValue($entity, 1);
 
-        $this->deliveryCompany->setDeliveryId($deliveryId);
-        $this->deliveryCompany->setDeliveryName($deliveryName);
-        
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
+
         // 测试__toString方法
-        $this->assertStringContainsString($deliveryName, (string) $this->deliveryCompany);
+        $this->assertStringContainsString($deliveryName, (string) $entity);
     }
-} 
+}

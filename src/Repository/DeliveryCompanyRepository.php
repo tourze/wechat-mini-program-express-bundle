@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 use WechatMiniProgramExpressBundle\Entity\DeliveryCompany;
 
 /**
  * 即时配送公司仓库
  *
- * @method DeliveryCompany|null find($id, $lockMode = null, $lockVersion = null)
- * @method DeliveryCompany|null findOneBy(array $criteria, array $orderBy = null)
- * @method DeliveryCompany[]    findAll()
- * @method DeliveryCompany[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<DeliveryCompany>
  */
+#[AsRepository(entityClass: DeliveryCompany::class)]
 class DeliveryCompanyRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -27,5 +28,23 @@ class DeliveryCompanyRepository extends ServiceEntityRepository
     public function findByDeliveryId(string $deliveryId): ?DeliveryCompany
     {
         return $this->findOneBy(['deliveryId' => $deliveryId]);
+    }
+
+    public function save(DeliveryCompany $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(DeliveryCompany $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }

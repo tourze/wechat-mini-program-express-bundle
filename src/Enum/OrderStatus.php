@@ -1,89 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Enum;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
 use Tourze\EnumExtra\Selectable;
 use Tourze\EnumExtra\SelectTrait;
 
-/**
- * 配送单状态枚举
- *
- * @see https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/industry/immediate-delivery/order_status.html
- */
-enum OrderStatus: int implements Labelable, Itemable, Selectable
+enum OrderStatus: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
-
-    // 订单状态分类: 配送中
     case ORDER_STATUS_DISPATCHING = 10;
-
-    // 订单状态分类: 已完成
     case ORDER_STATUS_FINISHED = 20;
-
-    // 订单状态分类: 已取消
     case ORDER_STATUS_CANCELLED = 30;
-
-    // 订单状态分类: 异常
     case ORDER_STATUS_EXCEPTION = 40;
-
-    // 详细状态码: 配送中
     case DELIVERY_DISPATCHING = 100;
     case DELIVERY_ACCEPTED = 101;
     case DELIVERY_ARRIVED_PICKUP = 102;
     case DELIVERY_PICKUP_DELIVER = 103;
-
-    // 详细状态码: 已完成
     case DELIVERY_DELIVERED = 200;
     case DELIVERY_CONFIRMED = 201;
     case DELIVERY_REJECTED = 202;
-
-    // 详细状态码: 已取消
     case DELIVERY_CANCELLED = 300;
     case DELIVERY_CANCELLED_EXCEPTION = 301;
     case DELIVERY_CANCELLED_DRIVER = 302;
-
-    // 详细状态码: 异常
     case DELIVERY_EXCEPTION = 400;
     case DELIVERY_RETURNING = 401;
     case DELIVERY_RETURNED = 402;
 
-    /**
-     * 获取状态码类别
-     */
-    public function getCategory(): self
-    {
-        return match (true) {
-            $this->value >= 100 && $this->value < 200 => self::ORDER_STATUS_DISPATCHING,
-            $this->value >= 200 && $this->value < 300 => self::ORDER_STATUS_FINISHED,
-            $this->value >= 300 && $this->value < 400 => self::ORDER_STATUS_CANCELLED,
-            $this->value >= 400 && $this->value < 500 => self::ORDER_STATUS_EXCEPTION,
-            default => $this,
-        };
-    }
-
-    /**
-     * 获取标签文本
-     */
-    public function toLabel(): string
-    {
-        return $this->getDescription();
-    }
-
-    /**
-     * 获取标签
-     */
     public function getLabel(): string
     {
         return $this->getDescription();
     }
 
-    /**
-     * 获取状态描述
-     */
     public function getDescription(): string
     {
         return match ($this) {
@@ -104,6 +58,79 @@ enum OrderStatus: int implements Labelable, Itemable, Selectable
             self::DELIVERY_EXCEPTION => '配送异常',
             self::DELIVERY_RETURNING => '退回中',
             self::DELIVERY_RETURNED => '已退回',
+        };
+    }
+
+    public function toLabel(): string
+    {
+        return $this->getDescription();
+    }
+
+    public function getCategory(): self
+    {
+        return match ($this) {
+            self::ORDER_STATUS_DISPATCHING => self::ORDER_STATUS_DISPATCHING,
+            self::ORDER_STATUS_FINISHED => self::ORDER_STATUS_FINISHED,
+            self::ORDER_STATUS_CANCELLED => self::ORDER_STATUS_CANCELLED,
+            self::ORDER_STATUS_EXCEPTION => self::ORDER_STATUS_EXCEPTION,
+
+            self::DELIVERY_DISPATCHING => self::ORDER_STATUS_DISPATCHING,
+            self::DELIVERY_ACCEPTED => self::ORDER_STATUS_DISPATCHING,
+            self::DELIVERY_ARRIVED_PICKUP => self::ORDER_STATUS_DISPATCHING,
+            self::DELIVERY_PICKUP_DELIVER => self::ORDER_STATUS_DISPATCHING,
+
+            self::DELIVERY_DELIVERED => self::ORDER_STATUS_FINISHED,
+            self::DELIVERY_CONFIRMED => self::ORDER_STATUS_FINISHED,
+            self::DELIVERY_REJECTED => self::ORDER_STATUS_FINISHED,
+
+            self::DELIVERY_CANCELLED => self::ORDER_STATUS_CANCELLED,
+            self::DELIVERY_CANCELLED_EXCEPTION => self::ORDER_STATUS_CANCELLED,
+            self::DELIVERY_CANCELLED_DRIVER => self::ORDER_STATUS_CANCELLED,
+
+            self::DELIVERY_EXCEPTION => self::ORDER_STATUS_EXCEPTION,
+            self::DELIVERY_RETURNING => self::ORDER_STATUS_EXCEPTION,
+            self::DELIVERY_RETURNED => self::ORDER_STATUS_EXCEPTION,
+        };
+    }
+
+    /**
+     * 获取所有枚举的选项数组（用于下拉列表等）
+     *
+     * @return array<int, array{value: int, label: string}>
+     */
+    public static function toSelectItems(): array
+    {
+        $result = [];
+        foreach (self::cases() as $case) {
+            $result[] = [
+                'value' => $case->value,
+                'label' => $case->getLabel(),
+            ];
+        }
+
+        return $result;
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::ORDER_STATUS_DISPATCHING => BadgeInterface::PRIMARY,
+            self::ORDER_STATUS_FINISHED => BadgeInterface::SUCCESS,
+            self::ORDER_STATUS_CANCELLED => BadgeInterface::SECONDARY,
+            self::ORDER_STATUS_EXCEPTION => BadgeInterface::DANGER,
+            self::DELIVERY_DISPATCHING => BadgeInterface::WARNING,
+            self::DELIVERY_ACCEPTED => BadgeInterface::INFO,
+            self::DELIVERY_ARRIVED_PICKUP => BadgeInterface::INFO,
+            self::DELIVERY_PICKUP_DELIVER => BadgeInterface::PRIMARY,
+            self::DELIVERY_DELIVERED => BadgeInterface::SUCCESS,
+            self::DELIVERY_CONFIRMED => BadgeInterface::SUCCESS,
+            self::DELIVERY_REJECTED => BadgeInterface::WARNING,
+            self::DELIVERY_CANCELLED => BadgeInterface::SECONDARY,
+            self::DELIVERY_CANCELLED_EXCEPTION => BadgeInterface::DANGER,
+            self::DELIVERY_CANCELLED_DRIVER => BadgeInterface::WARNING,
+            self::DELIVERY_EXCEPTION => BadgeInterface::DANGER,
+            self::DELIVERY_RETURNING => BadgeInterface::WARNING,
+            self::DELIVERY_RETURNED => BadgeInterface::SECONDARY,
         };
     }
 }

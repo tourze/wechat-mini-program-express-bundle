@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Request;
 
 use WechatMiniProgramBundle\Request\WithAccountRequest;
@@ -76,60 +78,48 @@ class RealMockUpdateOrderRequest extends WithAccountRequest
     /**
      * 设置商家ID
      */
-    public function setShopId(string $shopid): self
+    public function setShopId(string $shopid): void
     {
         $this->shopid = $shopid;
-
-        return $this;
     }
 
     /**
      * 设置商家订单号
      */
-    public function setShopOrderId(string $shop_order_id): self
+    public function setShopOrderId(string $shop_order_id): void
     {
         $this->shop_order_id = $shop_order_id;
-
-        return $this;
     }
 
     /**
      * 设置配送状态
      */
-    public function setOrderStatus(int $order_status): self
+    public function setOrderStatus(int $order_status): void
     {
         $this->order_status = $order_status;
-
-        return $this;
     }
 
     /**
      * 设置状态变更时间
      */
-    public function setActionTime(int $action_time): self
+    public function setActionTime(int $action_time): void
     {
         $this->action_time = $action_time;
-
-        return $this;
     }
 
     /**
      * 设置附加信息
      */
-    public function setActionMsg(?string $action_msg): self
+    public function setActionMsg(?string $action_msg): void
     {
         $this->action_msg = $action_msg;
-
-        return $this;
     }
 
     /**
      * 设置配送公司校验串
      */
-    public function setDeliverySign(string $delivery_sign): self
+    public function setDeliverySign(string $delivery_sign): void
     {
         $this->delivery_sign = $delivery_sign;
-
-        return $this;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Request;
 
 use WechatMiniProgramBundle\Request\WithAccountRequest;
@@ -78,50 +80,40 @@ class MockUpdateOrderRequest extends WithAccountRequest
     /**
      * 设置配送单ID
      */
-    public function setOrderId(string $order_id): self
+    public function setOrderId(string $order_id): void
     {
         $this->order_id = $order_id;
-
-        return $this;
     }
 
     /**
      * 设置配送公司ID
      */
-    public function setDeliveryId(string $delivery_id): self
+    public function setDeliveryId(string $delivery_id): void
     {
         $this->delivery_id = $delivery_id;
-
-        return $this;
     }
 
     /**
      * 设置商户ID
      */
-    public function setShopId(string $shop_id): self
+    public function setShopId(string $shop_id): void
     {
         $this->shop_id = $shop_id;
-
-        return $this;
     }
 
     /**
      * 设置动作类型
      */
-    public function setActionType(string $action_type): self
+    public function setActionType(string $action_type): void
     {
         $this->action_type = $action_type;
-
-        return $this;
     }
 
     /**
      * 设置附加信息
      */
-    public function setMockInfo(?string $mock_info): self
+    public function setMockInfo(?string $mock_info): void
     {
         $this->mock_info = $mock_info;
-
-        return $this;
     }
 }

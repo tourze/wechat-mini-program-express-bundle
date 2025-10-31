@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Entity\Embed;
 
 use Doctrine\DBAL\Types\Types;
@@ -15,42 +17,49 @@ class CargoInfo
     /**
      * 一级分类
      */
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '一级分类'])]
     #[TrackColumn]
     private ?string $cargoFirstClass = null;
 
     /**
      * 二级分类
      */
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '二级分类'])]
     #[TrackColumn]
     private ?string $cargoSecondClass = null;
 
     /**
      * 货物高度，单位：cm
      */
+    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物高度，单位：cm'])]
     #[TrackColumn]
     private ?float $goodsHeight = null;
 
     /**
      * 货物长度，单位：cm
      */
+    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物长度，单位：cm'])]
     #[TrackColumn]
     private ?float $goodsLength = null;
 
     /**
      * 货物宽度，单位：cm
      */
+    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物宽度，单位：cm'])]
     #[TrackColumn]
     private ?float $goodsWidth = null;
 
     /**
      * 货物重量，单位：kg
      */
+    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物重量，单位：kg'])]
     #[TrackColumn]
     private ?float $goodsWeight = null;
 
     /**
      * 货物价格，单位：元
      */
+    #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '货物价格，单位：元'])]
     #[TrackColumn]
     private ?float $goodsValue = null;
 
@@ -63,6 +72,7 @@ class CargoInfo
     /**
      * 商品数量
      */
+    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '商品数量'])]
     #[TrackColumn]
     private ?int $goodsCount = null;
 
@@ -71,11 +81,9 @@ class CargoInfo
         return $this->cargoFirstClass;
     }
 
-    public function setCargoFirstClass(?string $cargoFirstClass): self
+    public function setCargoFirstClass(?string $cargoFirstClass): void
     {
         $this->cargoFirstClass = $cargoFirstClass;
-
-        return $this;
     }
 
     public function getCargoSecondClass(): ?string
@@ -83,11 +91,9 @@ class CargoInfo
         return $this->cargoSecondClass;
     }
 
-    public function setCargoSecondClass(?string $cargoSecondClass): self
+    public function setCargoSecondClass(?string $cargoSecondClass): void
     {
         $this->cargoSecondClass = $cargoSecondClass;
-
-        return $this;
     }
 
     public function getGoodsHeight(): ?float
@@ -95,11 +101,9 @@ class CargoInfo
         return $this->goodsHeight;
     }
 
-    public function setGoodsHeight(?float $goodsHeight): self
+    public function setGoodsHeight(?float $goodsHeight): void
     {
         $this->goodsHeight = $goodsHeight;
-
-        return $this;
     }
 
     public function getGoodsLength(): ?float
@@ -107,11 +111,9 @@ class CargoInfo
         return $this->goodsLength;
     }
 
-    public function setGoodsLength(?float $goodsLength): self
+    public function setGoodsLength(?float $goodsLength): void
     {
         $this->goodsLength = $goodsLength;
-
-        return $this;
     }
 
     public function getGoodsWidth(): ?float
@@ -119,11 +121,9 @@ class CargoInfo
         return $this->goodsWidth;
     }
 
-    public function setGoodsWidth(?float $goodsWidth): self
+    public function setGoodsWidth(?float $goodsWidth): void
     {
         $this->goodsWidth = $goodsWidth;
-
-        return $this;
     }
 
     public function getGoodsWeight(): ?float
@@ -131,11 +131,9 @@ class CargoInfo
         return $this->goodsWeight;
     }
 
-    public function setGoodsWeight(?float $goodsWeight): self
+    public function setGoodsWeight(?float $goodsWeight): void
     {
         $this->goodsWeight = $goodsWeight;
-
-        return $this;
     }
 
     public function getGoodsValue(): ?float
@@ -143,11 +141,9 @@ class CargoInfo
         return $this->goodsValue;
     }
 
-    public function setGoodsValue(?float $goodsValue): self
+    public function setGoodsValue(?float $goodsValue): void
     {
         $this->goodsValue = $goodsValue;
-
-        return $this;
     }
 
     public function getGoodsDetail(): ?string
@@ -155,11 +151,9 @@ class CargoInfo
         return $this->goodsDetail;
     }
 
-    public function setGoodsDetail(?string $goodsDetail): self
+    public function setGoodsDetail(?string $goodsDetail): void
     {
         $this->goodsDetail = $goodsDetail;
-
-        return $this;
     }
 
     public function getGoodsCount(): ?int
@@ -167,15 +161,15 @@ class CargoInfo
         return $this->goodsCount;
     }
 
-    public function setGoodsCount(?int $goodsCount): self
+    public function setGoodsCount(?int $goodsCount): void
     {
         $this->goodsCount = $goodsCount;
-
-        return $this;
     }
 
     /**
      * 转换为API请求参数数组
+     *
+     * @return array<string, mixed>
      */
     public function toRequestArray(): array
     {
@@ -192,7 +186,7 @@ class CargoInfo
         if (null !== $this->getGoodsDetail()) {
             $data['goods_detail'] = $this->getGoodsDetail();
         }
-        
+
         if (null !== $this->getGoodsCount()) {
             $data['goods_count'] = $this->getGoodsCount();
         }
@@ -202,47 +196,162 @@ class CargoInfo
 
     /**
      * 从数组创建实例
+     *
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
         $info = new self();
 
-        if ((bool) isset($data['cargo_first_class'])) {
-            $info->setCargoFirstClass($data['cargo_first_class']);
-        }
-
-        if ((bool) isset($data['cargo_second_class'])) {
-            $info->setCargoSecondClass($data['cargo_second_class']);
-        }
-
-        if ((bool) isset($data['goods_height'])) {
-            $info->setGoodsHeight((float) $data['goods_height']);
-        }
-
-        if ((bool) isset($data['goods_length'])) {
-            $info->setGoodsLength((float) $data['goods_length']);
-        }
-
-        if ((bool) isset($data['goods_width'])) {
-            $info->setGoodsWidth((float) $data['goods_width']);
-        }
-
-        if ((bool) isset($data['goods_weight'])) {
-            $info->setGoodsWeight((float) $data['goods_weight']);
-        }
-
-        if ((bool) isset($data['goods_value'])) {
-            $info->setGoodsValue((float) $data['goods_value']);
-        }
-
-        if ((bool) isset($data['goods_detail'])) {
-            $info->setGoodsDetail($data['goods_detail']);
-        }
-        
-        if ((bool) isset($data['goods_count'])) {
-            $info->setGoodsCount((int) $data['goods_count']);
-        }
+        $info->setStringFields($data);
+        $info->setNumericFields($data);
 
         return $info;
+    }
+
+    /**
+     * 设置字符串字段
+     *
+     * @param array<string, mixed> $data
+     */
+    private function setStringFields(array $data): void
+    {
+        if (isset($data['cargo_first_class'])) {
+            $this->setCargoFirstClass($this->convertToStringOrNull($data['cargo_first_class']));
+        }
+
+        if (isset($data['cargo_second_class'])) {
+            $this->setCargoSecondClass($this->convertToStringOrNull($data['cargo_second_class']));
+        }
+
+        if (isset($data['goods_detail'])) {
+            $this->setGoodsDetail($this->convertToStringOrNull($data['goods_detail']));
+        }
+    }
+
+    /**
+     * 设置数值字段
+     *
+     * @param array<string, mixed> $data
+     */
+    private function setNumericFields(array $data): void
+    {
+        if (isset($data['goods_height'])) {
+            $this->setGoodsHeight($this->convertToFloatOrNull($data['goods_height']));
+        }
+
+        if (isset($data['goods_length'])) {
+            $this->setGoodsLength($this->convertToFloatOrNull($data['goods_length']));
+        }
+
+        if (isset($data['goods_width'])) {
+            $this->setGoodsWidth($this->convertToFloatOrNull($data['goods_width']));
+        }
+
+        if (isset($data['goods_weight'])) {
+            $this->setGoodsWeight($this->convertToFloatOrNull($data['goods_weight']));
+        }
+
+        if (isset($data['goods_value'])) {
+            $this->setGoodsValue($this->convertToFloatOrNull($data['goods_value']));
+        }
+
+        if (isset($data['goods_count'])) {
+            $this->setGoodsCount($this->convertToIntOrNull($data['goods_count']));
+        }
+    }
+
+    /**
+     * 安全地将 mixed 值转换为 string 或 null
+     */
+    private function convertToStringOrNull(mixed $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (is_numeric($value)) {
+            return (string) $value;
+        }
+
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        if (is_object($value) || is_array($value)) {
+            $encoded = json_encode($value);
+
+            return false === $encoded ? '' : $encoded;
+        }
+
+        if (is_resource($value)) {
+            return (string) $value;
+        }
+
+        return '';
+    }
+
+    /**
+     * 安全地将 mixed 值转换为 int 或 null
+     */
+    private function convertToIntOrNull(mixed $value): ?int
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_float($value)) {
+            return (int) $value;
+        }
+
+        if (is_string($value) && is_numeric($value)) {
+            return (int) $value;
+        }
+
+        if (is_bool($value)) {
+            return $value ? 1 : 0;
+        }
+
+        $filtered = filter_var($value, FILTER_VALIDATE_INT);
+
+        return false !== $filtered ? $filtered : 0;
+    }
+
+    /**
+     * 安全地将 mixed 值转换为 float 或 null
+     */
+    private function convertToFloatOrNull(mixed $value): ?float
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if (is_float($value)) {
+            return $value;
+        }
+
+        if (is_int($value)) {
+            return (float) $value;
+        }
+
+        if (is_string($value) && is_numeric($value)) {
+            return (float) $value;
+        }
+
+        if (is_bool($value)) {
+            return $value ? 1.0 : 0.0;
+        }
+
+        $filtered = filter_var($value, FILTER_VALIDATE_FLOAT);
+
+        return false !== $filtered ? $filtered : 0.0;
     }
 }

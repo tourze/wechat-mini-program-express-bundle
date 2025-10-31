@@ -2,63 +2,64 @@
 
 namespace WechatMiniProgramExpressBundle\Tests\Entity;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use WechatMiniProgramBundle\Entity\Account;
 use WechatMiniProgramExpressBundle\Entity\BindAccount;
 
-class BindAccountTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(BindAccount::class)]
+final class BindAccountTest extends AbstractEntityTestCase
 {
-    private BindAccount $bindAccount;
-
-    protected function setUp(): void
+    protected function createEntity(): BindAccount
     {
-        $this->bindAccount = new BindAccount();
+        return new BindAccount();
     }
 
-    public function testGettersAndSetters(): void
+    /**
+     * @return iterable<string, array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
     {
+        return [
+            'valid' => ['valid', true],
+            'deliveryId' => ['deliveryId', 'test-delivery-id'],
+            'deliveryName' => ['deliveryName', '测试配送公司'],
+            'shopId' => ['shopId', 'shop-123'],
+            'shopNo' => ['shopNo', 'no-456'],
+            'appSecret' => ['appSecret', 'secret-key'],
+            'extraConfig' => ['extraConfig', ['config1' => 'value1']],
+        ];
+    }
+
+    public function testAccountGetterAndSetter(): void
+    {
+        $entity = $this->createEntity();
         $account = $this->createMock(Account::class);
-        $deliveryId = 'delivery-123';
-        $deliveryName = '测试配送公司';
-        $shopId = 'shop-456';
-        $shopNo = 'no-789';
-        $appSecret = 'secret-key';
-        $extraConfig = ['config1' => 'value1', 'config2' => 'value2'];
 
-        $this->bindAccount->setAccount($account);
-        $this->bindAccount->setDeliveryId($deliveryId);
-        $this->bindAccount->setDeliveryName($deliveryName);
-        $this->bindAccount->setShopId($shopId);
-        $this->bindAccount->setShopNo($shopNo);
-        $this->bindAccount->setAppSecret($appSecret);
-        $this->bindAccount->setExtraConfig($extraConfig);
-        $this->bindAccount->setValid(true);
-
-        $this->assertSame($account, $this->bindAccount->getAccount());
-        $this->assertSame($deliveryId, $this->bindAccount->getDeliveryId());
-        $this->assertSame($deliveryName, $this->bindAccount->getDeliveryName());
-        $this->assertSame($shopId, $this->bindAccount->getShopId());
-        $this->assertSame($shopNo, $this->bindAccount->getShopNo());
-        $this->assertSame($appSecret, $this->bindAccount->getAppSecret());
-        $this->assertSame($extraConfig, $this->bindAccount->getExtraConfig());
-        $this->assertTrue($this->bindAccount->isValid());
+        $entity->setAccount($account);
+        $this->assertSame($account, $entity->getAccount());
     }
 
     public function testToArray(): void
     {
+        $entity = $this->createEntity();
         $deliveryId = 'delivery-123';
         $deliveryName = '测试配送公司';
         $shopId = 'shop-456';
         $shopNo = 'no-789';
         $extraConfig = ['config1' => 'value1', 'config2' => 'value2'];
 
-        $this->bindAccount->setDeliveryId($deliveryId);
-        $this->bindAccount->setDeliveryName($deliveryName);
-        $this->bindAccount->setShopId($shopId);
-        $this->bindAccount->setShopNo($shopNo);
-        $this->bindAccount->setExtraConfig($extraConfig);
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
+        $entity->setShopId($shopId);
+        $entity->setShopNo($shopNo);
+        $entity->setExtraConfig($extraConfig);
 
-        $array = $this->bindAccount->toArray();
+        $array = $entity->toArray();
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
         $this->assertArrayHasKey('shopId', $array);
@@ -77,11 +78,12 @@ class BindAccountTest extends TestCase
         $deliveryName = '测试配送公司';
         $shopId = 'shop-456';
 
-        $this->bindAccount->setDeliveryId($deliveryId);
-        $this->bindAccount->setDeliveryName($deliveryName);
-        $this->bindAccount->setShopId($shopId);
+        $entity = $this->createEntity();
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
+        $entity->setShopId($shopId);
 
-        $array = $this->bindAccount->retrievePlainArray();
+        $array = $entity->retrievePlainArray();
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
         $this->assertSame($deliveryId, $array['deliveryId']);
@@ -93,11 +95,12 @@ class BindAccountTest extends TestCase
         $deliveryName = '测试配送公司';
         $shopId = 'shop-456';
 
-        $this->bindAccount->setDeliveryId($deliveryId);
-        $this->bindAccount->setDeliveryName($deliveryName);
-        $this->bindAccount->setShopId($shopId);
+        $entity = $this->createEntity();
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
+        $entity->setShopId($shopId);
 
-        $array = $this->bindAccount->retrieveApiArray();
+        $array = $entity->retrieveApiArray();
         // 验证API数组包含需要的字段
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
@@ -109,11 +112,12 @@ class BindAccountTest extends TestCase
         $deliveryName = '测试配送公司';
         $shopId = 'shop-456';
 
-        $this->bindAccount->setDeliveryId($deliveryId);
-        $this->bindAccount->setDeliveryName($deliveryName);
-        $this->bindAccount->setShopId($shopId);
+        $entity = $this->createEntity();
+        $entity->setDeliveryId($deliveryId);
+        $entity->setDeliveryName($deliveryName);
+        $entity->setShopId($shopId);
 
-        $array = $this->bindAccount->retrieveAdminArray();
+        $array = $entity->retrieveAdminArray();
         // 验证管理员数组包含需要的字段
         $this->assertArrayHasKey('deliveryId', $array);
         $this->assertArrayHasKey('deliveryName', $array);
@@ -125,12 +129,13 @@ class BindAccountTest extends TestCase
         $extraConfig = [
             'delivery_service' => 1,
             'audit_result' => 2,
-            'complex_data' => ['key1' => 'value1', 'key2' => 'value2']
+            'complex_data' => ['key1' => 'value1', 'key2' => 'value2'],
         ];
 
-        $this->bindAccount->setExtraConfig($extraConfig);
+        $entity = $this->createEntity();
+        $entity->setExtraConfig($extraConfig);
 
-        $retrievedConfig = $this->bindAccount->getExtraConfig();
+        $retrievedConfig = $entity->getExtraConfig();
 
         $this->assertSame($extraConfig, $retrievedConfig);
         $this->assertArrayHasKey('delivery_service', $retrievedConfig);
@@ -149,12 +154,13 @@ class BindAccountTest extends TestCase
         $reflectionClass = new \ReflectionClass(BindAccount::class);
         $idProperty = $reflectionClass->getProperty('id');
         $idProperty->setAccessible(true);
-        $idProperty->setValue($this->bindAccount, 1);
+        $entity = $this->createEntity();
+        $idProperty->setValue($entity, 1);
 
-        $this->bindAccount->setDeliveryName($deliveryName);
-        $this->bindAccount->setShopId($shopId);
-        
-        $string = (string) $this->bindAccount;
+        $entity->setDeliveryName($deliveryName);
+        $entity->setShopId($shopId);
+
+        $string = (string) $entity;
         // 检查__toString方法是否将deliveryName和shopId组合起来
         $this->assertStringContainsString($deliveryName, $string);
         $this->assertStringContainsString($shopId, $string);
@@ -163,33 +169,36 @@ class BindAccountTest extends TestCase
     public function testTimestampMethods(): void
     {
         $now = new \DateTimeImmutable();
-        
-        $this->bindAccount->setCreateTime($now);
-        $this->bindAccount->setUpdateTime($now);
-        
-        $this->assertEquals($now, $this->bindAccount->getCreateTime());
-        $this->assertEquals($now, $this->bindAccount->getUpdateTime());
+
+        $entity = $this->createEntity();
+        $entity->setCreateTime($now);
+        $entity->setUpdateTime($now);
+
+        $this->assertEquals($now, $entity->getCreateTime());
+        $this->assertEquals($now, $entity->getUpdateTime());
     }
 
     public function testIpMethods(): void
     {
         $ip = '192.168.1.1';
-        
-        $this->bindAccount->setCreatedFromIp($ip);
-        $this->bindAccount->setUpdatedFromIp($ip);
-        
-        $this->assertEquals($ip, $this->bindAccount->getCreatedFromIp());
-        $this->assertEquals($ip, $this->bindAccount->getUpdatedFromIp());
+
+        $entity = $this->createEntity();
+        $entity->setCreatedFromIp($ip);
+        $entity->setUpdatedFromIp($ip);
+
+        $this->assertEquals($ip, $entity->getCreatedFromIp());
+        $this->assertEquals($ip, $entity->getUpdatedFromIp());
     }
 
     public function testUserMethods(): void
     {
         $user = 'testuser';
-        
-        $this->bindAccount->setCreatedBy($user);
-        $this->bindAccount->setUpdatedBy($user);
-        
-        $this->assertEquals($user, $this->bindAccount->getCreatedBy());
-        $this->assertEquals($user, $this->bindAccount->getUpdatedBy());
+
+        $entity = $this->createEntity();
+        $entity->setCreatedBy($user);
+        $entity->setUpdatedBy($user);
+
+        $this->assertEquals($user, $entity->getCreatedBy());
+        $this->assertEquals($user, $entity->getUpdatedBy());
     }
-} 
+}

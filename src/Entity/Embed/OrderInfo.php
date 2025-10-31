@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Entity\Embed;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -14,66 +16,77 @@ class OrderInfo
     /**
      * 下单时间（Unix时间戳）
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     #[TrackColumn]
     private ?int $orderTime = null;
 
     /**
      * 订单类型
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     #[TrackColumn]
     private ?int $orderType = null;
 
     /**
      * 门店订单流水号
      */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[TrackColumn]
     private ?string $poiSeq = null;
 
     /**
      * 备注
      */
+    #[ORM\Column(type: 'text', nullable: true)]
     #[TrackColumn]
     private ?string $note = null;
 
     /**
      * 是否选择直拿直送
      */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     #[TrackColumn]
     private ?bool $isDirectDelivery = null;
 
     /**
      * 是否需要取货码
      */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     #[TrackColumn]
     private ?bool $isPickupCodeNeeded = null;
 
     /**
      * 是否需要完成码
      */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     #[TrackColumn]
     private ?bool $isFinishCodeNeeded = null;
 
     /**
      * 期望送达时间（Unix时间戳）
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     #[TrackColumn]
     private ?int $expectedDeliveryTime = null;
 
     /**
      * 配送服务代码
      */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[TrackColumn]
     private ?string $deliveryServiceCode = null;
 
     /**
      * 是否保价
      */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     #[TrackColumn]
     private ?bool $isInsured = null;
 
     /**
      * 小费，单位：元
      */
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     #[TrackColumn]
     private ?float $tips = null;
 
@@ -82,11 +95,9 @@ class OrderInfo
         return $this->orderTime;
     }
 
-    public function setOrderTime(?int $orderTime): self
+    public function setOrderTime(?int $orderTime): void
     {
         $this->orderTime = $orderTime;
-
-        return $this;
     }
 
     public function getOrderType(): ?int
@@ -94,11 +105,9 @@ class OrderInfo
         return $this->orderType;
     }
 
-    public function setOrderType(?int $orderType): self
+    public function setOrderType(?int $orderType): void
     {
         $this->orderType = $orderType;
-
-        return $this;
     }
 
     public function getPoiSeq(): ?string
@@ -106,11 +115,9 @@ class OrderInfo
         return $this->poiSeq;
     }
 
-    public function setPoiSeq(?string $poiSeq): self
+    public function setPoiSeq(?string $poiSeq): void
     {
         $this->poiSeq = $poiSeq;
-
-        return $this;
     }
 
     public function getNote(): ?string
@@ -118,11 +125,9 @@ class OrderInfo
         return $this->note;
     }
 
-    public function setNote(?string $note): self
+    public function setNote(?string $note): void
     {
         $this->note = $note;
-
-        return $this;
     }
 
     public function getIsDirectDelivery(): ?bool
@@ -130,11 +135,9 @@ class OrderInfo
         return $this->isDirectDelivery;
     }
 
-    public function setIsDirectDelivery(?bool $isDirectDelivery): self
+    public function setIsDirectDelivery(?bool $isDirectDelivery): void
     {
         $this->isDirectDelivery = $isDirectDelivery;
-
-        return $this;
     }
 
     public function getIsPickupCodeNeeded(): ?bool
@@ -142,11 +145,9 @@ class OrderInfo
         return $this->isPickupCodeNeeded;
     }
 
-    public function setIsPickupCodeNeeded(?bool $isPickupCodeNeeded): self
+    public function setIsPickupCodeNeeded(?bool $isPickupCodeNeeded): void
     {
         $this->isPickupCodeNeeded = $isPickupCodeNeeded;
-
-        return $this;
     }
 
     public function getIsFinishCodeNeeded(): ?bool
@@ -154,11 +155,9 @@ class OrderInfo
         return $this->isFinishCodeNeeded;
     }
 
-    public function setIsFinishCodeNeeded(?bool $isFinishCodeNeeded): self
+    public function setIsFinishCodeNeeded(?bool $isFinishCodeNeeded): void
     {
         $this->isFinishCodeNeeded = $isFinishCodeNeeded;
-
-        return $this;
     }
 
     public function getExpectedDeliveryTime(): ?int
@@ -166,11 +165,9 @@ class OrderInfo
         return $this->expectedDeliveryTime;
     }
 
-    public function setExpectedDeliveryTime(?int $expectedDeliveryTime): self
+    public function setExpectedDeliveryTime(?int $expectedDeliveryTime): void
     {
         $this->expectedDeliveryTime = $expectedDeliveryTime;
-
-        return $this;
     }
 
     public function getDeliveryServiceCode(): ?string
@@ -178,11 +175,9 @@ class OrderInfo
         return $this->deliveryServiceCode;
     }
 
-    public function setDeliveryServiceCode(?string $deliveryServiceCode): self
+    public function setDeliveryServiceCode(?string $deliveryServiceCode): void
     {
         $this->deliveryServiceCode = $deliveryServiceCode;
-
-        return $this;
     }
 
     public function getIsInsured(): ?bool
@@ -190,11 +185,9 @@ class OrderInfo
         return $this->isInsured;
     }
 
-    public function setIsInsured(?bool $isInsured): self
+    public function setIsInsured(?bool $isInsured): void
     {
         $this->isInsured = $isInsured;
-
-        return $this;
     }
 
     public function getTips(): ?float
@@ -202,15 +195,15 @@ class OrderInfo
         return $this->tips;
     }
 
-    public function setTips(?float $tips): self
+    public function setTips(?float $tips): void
     {
         $this->tips = $tips;
-
-        return $this;
     }
 
     /**
      * 转换为API请求参数数组
+     *
+     * @return array<string, mixed>
      */
     public function toRequestArray(): array
     {
@@ -224,77 +217,210 @@ class OrderInfo
             'tips' => $this->getTips(),
         ];
 
-        // 布尔值转为0/1
-        if (null !== $this->getIsDirectDelivery()) {
-            $data['is_direct_delivery'] = $this->getIsDirectDelivery() ? 1 : 0;
-        }
-
-        if (null !== $this->getIsPickupCodeNeeded()) {
-            $data['is_pickup_code_needed'] = $this->getIsPickupCodeNeeded() ? 1 : 0;
-        }
-
-        if (null !== $this->getIsFinishCodeNeeded()) {
-            $data['is_finish_code_needed'] = $this->getIsFinishCodeNeeded() ? 1 : 0;
-        }
-
-        if (null !== $this->getIsInsured()) {
-            $data['is_insured'] = $this->getIsInsured() ? 1 : 0;
-        }
+        $data = $this->addBooleanFieldsToRequest($data);
 
         return array_filter($data, fn ($value) => null !== $value);
     }
 
     /**
+     * 添加布尔字段到请求数组
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function addBooleanFieldsToRequest(array $data): array
+    {
+        $booleanFields = [
+            'is_direct_delivery' => $this->getIsDirectDelivery(),
+            'is_pickup_code_needed' => $this->getIsPickupCodeNeeded(),
+            'is_finish_code_needed' => $this->getIsFinishCodeNeeded(),
+            'is_insured' => $this->getIsInsured(),
+        ];
+
+        foreach ($booleanFields as $key => $value) {
+            if (null !== $value) {
+                $data[$key] = $value ? 1 : 0;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * 从数组创建实例
+     *
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
         $info = new self();
 
-        if ((bool) isset($data['order_time'])) {
-            $info->setOrderTime((int) $data['order_time']);
-        }
-
-        if ((bool) isset($data['order_type'])) {
-            $info->setOrderType((int) $data['order_type']);
-        }
-
-        if ((bool) isset($data['poi_seq'])) {
-            $info->setPoiSeq($data['poi_seq']);
-        }
-
-        if ((bool) isset($data['note'])) {
-            $info->setNote($data['note']);
-        }
-
-        if ((bool) isset($data['is_direct_delivery'])) {
-            $info->setIsDirectDelivery((bool) $data['is_direct_delivery']);
-        }
-
-        if ((bool) isset($data['is_pickup_code_needed'])) {
-            $info->setIsPickupCodeNeeded((bool) $data['is_pickup_code_needed']);
-        }
-
-        if ((bool) isset($data['is_finish_code_needed'])) {
-            $info->setIsFinishCodeNeeded((bool) $data['is_finish_code_needed']);
-        }
-
-        if ((bool) isset($data['expected_delivery_time'])) {
-            $info->setExpectedDeliveryTime((int) $data['expected_delivery_time']);
-        }
-
-        if ((bool) isset($data['delivery_service_code'])) {
-            $info->setDeliveryServiceCode($data['delivery_service_code']);
-        }
-
-        if ((bool) isset($data['is_insured'])) {
-            $info->setIsInsured((bool) $data['is_insured']);
-        }
-
-        if ((bool) isset($data['tips'])) {
-            $info->setTips((float) $data['tips']);
-        }
+        $info->setBasicFields($data);
+        $info->setBooleanFields($data);
+        $info->setNumericFields($data);
 
         return $info;
+    }
+
+    /**
+     * 设置基本字段
+     *
+     * @param array<string, mixed> $data
+     */
+    private function setBasicFields(array $data): void
+    {
+        if (isset($data['poi_seq'])) {
+            $this->setPoiSeq($this->convertToStringOrNull($data['poi_seq']));
+        }
+
+        if (isset($data['note'])) {
+            $this->setNote($this->convertToStringOrNull($data['note']));
+        }
+
+        if (isset($data['delivery_service_code'])) {
+            $this->setDeliveryServiceCode($this->convertToStringOrNull($data['delivery_service_code']));
+        }
+    }
+
+    /**
+     * 设置布尔字段
+     *
+     * @param array<string, mixed> $data
+     */
+    private function setBooleanFields(array $data): void
+    {
+        if (isset($data['is_direct_delivery'])) {
+            $this->setIsDirectDelivery((bool) $data['is_direct_delivery']);
+        }
+
+        if (isset($data['is_pickup_code_needed'])) {
+            $this->setIsPickupCodeNeeded((bool) $data['is_pickup_code_needed']);
+        }
+
+        if (isset($data['is_finish_code_needed'])) {
+            $this->setIsFinishCodeNeeded((bool) $data['is_finish_code_needed']);
+        }
+
+        if (isset($data['is_insured'])) {
+            $this->setIsInsured((bool) $data['is_insured']);
+        }
+    }
+
+    /**
+     * 设置数值字段
+     *
+     * @param array<string, mixed> $data
+     */
+    private function setNumericFields(array $data): void
+    {
+        if (isset($data['order_time'])) {
+            $this->setOrderTime($this->convertToIntOrNull($data['order_time']));
+        }
+
+        if (isset($data['order_type'])) {
+            $this->setOrderType($this->convertToIntOrNull($data['order_type']));
+        }
+
+        if (isset($data['expected_delivery_time'])) {
+            $this->setExpectedDeliveryTime($this->convertToIntOrNull($data['expected_delivery_time']));
+        }
+
+        if (isset($data['tips'])) {
+            $this->setTips($this->convertToFloatOrNull($data['tips']));
+        }
+    }
+
+    /**
+     * 安全地将 mixed 值转换为 string 或 null
+     */
+    private function convertToStringOrNull(mixed $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (is_numeric($value)) {
+            return (string) $value;
+        }
+
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        if (is_object($value) || is_array($value)) {
+            $encoded = json_encode($value);
+
+            return false === $encoded ? '' : $encoded;
+        }
+
+        if (is_resource($value)) {
+            return (string) $value;
+        }
+
+        return '';
+    }
+
+    /**
+     * 安全地将 mixed 值转换为 int 或 null
+     */
+    private function convertToIntOrNull(mixed $value): ?int
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_float($value)) {
+            return (int) $value;
+        }
+
+        if (is_string($value) && is_numeric($value)) {
+            return (int) $value;
+        }
+
+        if (is_bool($value)) {
+            return $value ? 1 : 0;
+        }
+
+        $filtered = filter_var($value, FILTER_VALIDATE_INT);
+
+        return false !== $filtered ? $filtered : 0;
+    }
+
+    /**
+     * 安全地将 mixed 值转换为 float 或 null
+     */
+    private function convertToFloatOrNull(mixed $value): ?float
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if (is_float($value)) {
+            return $value;
+        }
+
+        if (is_int($value)) {
+            return (float) $value;
+        }
+
+        if (is_string($value) && is_numeric($value)) {
+            return (float) $value;
+        }
+
+        if (is_bool($value)) {
+            return $value ? 1.0 : 0.0;
+        }
+
+        $filtered = filter_var($value, FILTER_VALIDATE_FLOAT);
+
+        return false !== $filtered ? $filtered : 0.0;
     }
 }

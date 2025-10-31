@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Request;
 
 use WechatMiniProgramBundle\Request\WithAccountRequest;
@@ -103,11 +105,9 @@ class AddOrderRequest extends WithAccountRequest
     /**
      * 设置商家ID
      */
-    public function setShopId(string $shopid): self
+    public function setShopId(string $shopid): void
     {
         $this->shopid = $shopid;
-
-        return $this;
     }
 
     /**
@@ -121,11 +121,9 @@ class AddOrderRequest extends WithAccountRequest
     /**
      * 设置商家订单ID
      */
-    public function setShopOrderId(string $shop_order_id): self
+    public function setShopOrderId(string $shop_order_id): void
     {
         $this->shop_order_id = $shop_order_id;
-
-        return $this;
     }
 
     /**
@@ -139,11 +137,9 @@ class AddOrderRequest extends WithAccountRequest
     /**
      * 设置配送公司ID
      */
-    public function setDeliveryId(string $delivery_id): self
+    public function setDeliveryId(string $delivery_id): void
     {
         $this->delivery_id = $delivery_id;
-
-        return $this;
     }
 
     /**
@@ -157,11 +153,9 @@ class AddOrderRequest extends WithAccountRequest
     /**
      * 设置商家门店编号
      */
-    public function setShopNo(?string $shop_no): self
+    public function setShopNo(?string $shop_no): void
     {
         $this->shop_no = $shop_no;
-
-        return $this;
     }
 
     /**
@@ -175,95 +169,79 @@ class AddOrderRequest extends WithAccountRequest
     /**
      * 设置下单用户openid
      */
-    public function setOpenid(?string $openid): self
+    public function setOpenid(?string $openid): void
     {
         $this->openid = $openid;
-
-        return $this;
     }
 
     /**
      * 设置商家分配的业务单号
      */
-    public function setSubBizId(?string $sub_biz_id): self
+    public function setSubBizId(?string $sub_biz_id): void
     {
         $this->sub_biz_id = $sub_biz_id;
-
-        return $this;
     }
 
     /**
      * 设置配送公司安全码
      */
-    public function setDeliverySign(?string $delivery_sign): self
+    public function setDeliverySign(?string $delivery_sign): void
     {
         $this->delivery_sign = $delivery_sign;
-
-        return $this;
     }
 
     /**
      * 设置配送公司回调token
      */
-    public function setDeliveryToken(?string $delivery_token): self
+    public function setDeliveryToken(?string $delivery_token): void
     {
         $this->delivery_token = $delivery_token;
-
-        return $this;
     }
 
     /**
      * 设置发件人信息
      */
-    public function setSender(SenderInfo $sender): self
+    public function setSender(SenderInfo $sender): void
     {
         $this->sender = $sender;
-
-        return $this;
     }
 
     /**
      * 设置收件人信息
      */
-    public function setReceiver(ReceiverInfo $receiver): self
+    public function setReceiver(ReceiverInfo $receiver): void
     {
         $this->receiver = $receiver;
-
-        return $this;
     }
 
     /**
      * 设置货物信息
      */
-    public function setCargo(CargoInfo $cargo): self
+    public function setCargo(CargoInfo $cargo): void
     {
         $this->cargo = $cargo;
-
-        return $this;
     }
 
     /**
      * 设置订单信息
      */
-    public function setOrderInfo(OrderInfo $orderInfo): self
+    public function setOrderInfo(OrderInfo $orderInfo): void
     {
         $this->orderInfo = $orderInfo;
-
-        return $this;
     }
 
     /**
      * 设置商品信息
      */
-    public function setShop(?ShopInfo $shop): self
+    public function setShop(?ShopInfo $shop): void
     {
         $this->shop = $shop;
-
-        return $this;
     }
 
     /**
      * 构建请求参数
+     *
+     * @return array<string, mixed>
      */
     private function buildRequestParams(): array
     {
@@ -273,53 +251,62 @@ class AddOrderRequest extends WithAccountRequest
             'delivery_id' => $this->delivery_id,
         ];
 
-        // 添加发件人信息
-        if ($this->sender !== null) {
+        $this->addEntityParamsToRequest($params);
+        $this->addOptionalParamsToRequest($params);
+
+        return $params;
+    }
+
+    /**
+     * 添加实体参数到请求
+     *
+     * @param array<string, mixed> $params
+     */
+    // @phpstan-ignore-next-line
+    private function addEntityParamsToRequest(array &$params): void
+    {
+        if (null !== $this->sender) {
             $params['sender'] = $this->sender->toRequestArray();
         }
 
-        // 添加收件人信息
-        if ($this->receiver !== null) {
+        if (null !== $this->receiver) {
             $params['receiver'] = $this->receiver->toRequestArray();
         }
 
-        // 添加货物信息
-        if ($this->cargo !== null) {
+        if (null !== $this->cargo) {
             $params['cargo'] = $this->cargo->toRequestArray();
         }
 
-        // 添加订单信息
-        if ($this->orderInfo !== null) {
+        if (null !== $this->orderInfo) {
             $params['order_info'] = $this->orderInfo->toRequestArray();
         }
 
-        // 添加商品信息
-        if ($this->shop !== null) {
+        if (null !== $this->shop) {
             $params['shop'] = $this->shop->toRequestArray();
         }
+    }
 
-        // 添加可选参数
-        if ($this->shop_no !== null) {
-            $params['shop_no'] = $this->shop_no;
+    /**
+     * 添加可选参数到请求
+     *
+     * @param array<string, mixed> $params
+     */
+    // @phpstan-ignore-next-line
+    private function addOptionalParamsToRequest(array &$params): void
+    {
+        $optionalFields = [
+            'shop_no' => $this->shop_no,
+            'openid' => $this->openid,
+            'sub_biz_id' => $this->sub_biz_id,
+            'delivery_sign' => $this->delivery_sign,
+            'delivery_token' => $this->delivery_token,
+        ];
+
+        foreach ($optionalFields as $key => $value) {
+            if (null !== $value) {
+                $params[$key] = $value;
+            }
         }
-
-        if ($this->openid !== null) {
-            $params['openid'] = $this->openid;
-        }
-
-        if ($this->sub_biz_id !== null) {
-            $params['sub_biz_id'] = $this->sub_biz_id;
-        }
-
-        if ($this->delivery_sign !== null) {
-            $params['delivery_sign'] = $this->delivery_sign;
-        }
-
-        if ($this->delivery_token !== null) {
-            $params['delivery_token'] = $this->delivery_token;
-        }
-
-        return $params;
     }
 
     /**
@@ -348,6 +335,8 @@ class AddOrderRequest extends WithAccountRequest
 
     /**
      * 转换为数组，兼容测试
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

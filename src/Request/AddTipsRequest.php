@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Request;
 
 use WechatMiniProgramBundle\Request\WithAccountRequest;
@@ -85,70 +87,56 @@ class AddTipsRequest extends WithAccountRequest
     /**
      * 设置商家ID
      */
-    public function setShopId(string $shopid): self
+    public function setShopId(string $shopid): void
     {
         $this->shopid = $shopid;
-
-        return $this;
     }
 
     /**
      * 设置商家订单ID
      */
-    public function setShopOrderId(string $shop_order_id): self
+    public function setShopOrderId(string $shop_order_id): void
     {
         $this->shop_order_id = $shop_order_id;
-
-        return $this;
     }
 
     /**
      * 设置配送单ID
      */
-    public function setWaybillId(string $waybill_id): self
+    public function setWaybillId(string $waybill_id): void
     {
         $this->waybill_id = $waybill_id;
-
-        return $this;
     }
 
     /**
      * 设置小费金额
      */
-    public function setTips(float $tips): self
+    public function setTips(float $tips): void
     {
         $this->tips = $tips;
-
-        return $this;
     }
 
     /**
      * 设置配送公司安全码
      */
-    public function setDeliverySign(string $delivery_sign): self
+    public function setDeliverySign(string $delivery_sign): void
     {
         $this->delivery_sign = $delivery_sign;
-
-        return $this;
     }
 
     /**
      * 设置商家门店编号
      */
-    public function setShopNo(?string $shop_no): self
+    public function setShopNo(?string $shop_no): void
     {
         $this->shop_no = $shop_no;
-
-        return $this;
     }
 
     /**
      * 设置备注
      */
-    public function setRemark(?string $remark): self
+    public function setRemark(?string $remark): void
     {
         $this->remark = $remark;
-
-        return $this;
     }
 }

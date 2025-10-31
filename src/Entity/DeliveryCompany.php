@@ -1,58 +1,68 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\Arrayable\AdminArrayInterface;
 use Tourze\Arrayable\ApiArrayInterface;
-use Tourze\Arrayable\Arrayable;
-use Tourze\Arrayable\PlainArrayInterface;
-use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
-use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
+use Tourze\DoctrineIpBundle\Traits\IpTraceableAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 use WechatMiniProgramExpressBundle\Repository\DeliveryCompanyRepository;
 
+/**
+ * @implements ApiArrayInterface<string, mixed>
+ * @implements AdminArrayInterface<string, mixed>
+ */
 #[ORM\Entity(repositoryClass: DeliveryCompanyRepository::class)]
 #[ORM\Table(name: 'wechat_mini_program_express_delivery_company', options: ['comment' => '即时配送公司'])]
-class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, ApiArrayInterface, AdminArrayInterface
+class DeliveryCompany implements \Stringable, ApiArrayInterface, AdminArrayInterface
 {
     use TimestampableAware;
     use BlameableAware;
+    use IpTraceableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = 0;
+    private int $id = 0;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false, options: ['comment' => '配送公司ID'])]
+    #[Assert\NotBlank]
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 255)]
     private ?string $deliveryId = null;
 
     #[Groups(groups: ['admin_curd'])]
     #[TrackColumn]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false, options: ['comment' => '配送公司名称'])]
+    #[Assert\NotBlank]
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 255)]
     private ?string $deliveryName = null;
 
     #[TrackColumn]
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false, options: ['comment' => '是否有效', 'default' => false])]
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'bool')]
     private ?bool $valid = false;
-
-    #[CreateIpColumn]
-    private ?string $createdFromIp = null;
-
-    #[UpdateIpColumn]
-    private ?string $updatedFromIp = null;
-
 
     public function __toString(): string
     {
-        if ($this->getId() === null || $this->getId() === 0) {
+        if (0 === $this->getId()) {
             return '';
         }
 
@@ -64,11 +74,9 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
         return $this->valid;
     }
 
-    public function setValid(?bool $valid): self
+    public function setValid(?bool $valid): void
     {
         $this->valid = $valid;
-
-        return $this;
     }
 
     public function getDeliveryId(): ?string
@@ -76,11 +84,9 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
         return $this->deliveryId;
     }
 
-    public function setDeliveryId(string $deliveryId): self
+    public function setDeliveryId(string $deliveryId): void
     {
         $this->deliveryId = $deliveryId;
-
-        return $this;
     }
 
     public function getDeliveryName(): ?string
@@ -88,14 +94,36 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
         return $this->deliveryName;
     }
 
-    public function setDeliveryName(string $deliveryName): self
+    public function setDeliveryName(string $deliveryName): void
     {
         $this->deliveryName = $deliveryName;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
+    {
+        return $this->retrievePlainArray();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function retrievePlainArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'deliveryId' => $this->getDeliveryId(),
+            'deliveryName' => $this->getDeliveryName(),
+            'valid' => $this->isValid(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function retrieveApiArray(): array
     {
         return [
             'id' => $this->getId(),
@@ -104,43 +132,15 @@ class DeliveryCompany implements \Stringable, Arrayable, PlainArrayInterface, Ap
         ];
     }
 
-    public function retrievePlainArray(): array
-    {
-        return $this->toArray();
-    }
-
-    public function retrieveApiArray(): array
-    {
-        return $this->toArray();
-    }
-
+    /**
+     * @return array<string, mixed>
+     */
     public function retrieveAdminArray(): array
     {
-        return $this->toArray();
+        return [
+            'id' => $this->getId(),
+            'deliveryId' => $this->getDeliveryId(),
+            'deliveryName' => $this->getDeliveryName(),
+        ];
     }
-
-    public function setCreatedFromIp(?string $createdFromIp): self
-    {
-        $this->createdFromIp = $createdFromIp;
-
-        return $this;
-    }
-
-    public function getCreatedFromIp(): ?string
-    {
-        return $this->createdFromIp;
-    }
-
-    public function setUpdatedFromIp(?string $updatedFromIp): self
-    {
-        $this->updatedFromIp = $updatedFromIp;
-
-        return $this;
-    }
-
-    public function getUpdatedFromIp(): ?string
-    {
-        return $this->updatedFromIp;
-    }
-
 }

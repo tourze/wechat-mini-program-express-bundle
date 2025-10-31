@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Request;
 
 use WechatMiniProgramBundle\Request\WithAccountRequest;
@@ -33,26 +35,31 @@ class PreAddOrderRequest extends WithAccountRequest
 
     /**
      * 商品信息
+     * @var array<string, mixed>
      */
     private array $cargo = [];
 
     /**
      * 收件人信息
+     * @var array<string, mixed>
      */
     private array $receiver = [];
 
     /**
      * 发件人信息
+     * @var array<string, mixed>
      */
     private array $sender = [];
 
     /**
      * 订单信息
+     * @var array<string, mixed>
      */
     private array $order_info = [];
 
     /**
      * 店铺信息，闪送等要求必须提供
+     * @var array<string, mixed>|null
      */
     private ?array $shop = null;
 
@@ -94,90 +101,77 @@ class PreAddOrderRequest extends WithAccountRequest
     /**
      * 设置商家ID
      */
-    public function setShopId(string $shopid): self
+    public function setShopId(string $shopid): void
     {
         $this->shopid = $shopid;
-
-        return $this;
     }
 
     /**
      * 设置商家门店编号
      */
-    public function setShopNo(?string $shop_no): self
+    public function setShopNo(?string $shop_no): void
     {
         $this->shop_no = $shop_no;
-
-        return $this;
     }
 
     /**
      * 设置配送公司ID
      */
-    public function setDeliveryId(string $delivery_id): self
+    public function setDeliveryId(string $delivery_id): void
     {
         $this->delivery_id = $delivery_id;
-
-        return $this;
     }
 
     /**
      * 设置商家订单号
      */
-    public function setShopOrderId(string $shop_order_id): self
+    public function setShopOrderId(string $shop_order_id): void
     {
         $this->shop_order_id = $shop_order_id;
-
-        return $this;
     }
 
     /**
      * 设置商品信息
+     * @param array<string, mixed> $cargo
      */
-    public function setCargo(array $cargo): self
+    public function setCargo(array $cargo): void
     {
         $this->cargo = $cargo;
-
-        return $this;
     }
 
     /**
      * 设置收件人信息
+     * @param array<string, mixed> $receiver
      */
-    public function setReceiver(array $receiver): self
+    public function setReceiver(array $receiver): void
     {
         $this->receiver = $receiver;
-
-        return $this;
     }
 
     /**
      * 设置发件人信息
+     * @param array<string, mixed> $sender
      */
-    public function setSender(array $sender): self
+    public function setSender(array $sender): void
     {
         $this->sender = $sender;
-
-        return $this;
     }
 
     /**
      * 设置订单信息
+     * @param array<string, mixed> $order_info
      */
-    public function setOrderInfo(array $order_info): self
+    public function setOrderInfo(array $order_info): void
     {
         $this->order_info = $order_info;
-
-        return $this;
     }
 
     /**
      * 设置店铺信息
+     * @param array<string, mixed>|null $shop
      */
-    public function setShop(?array $shop): self
+    public function setShop(?array $shop): void
     {
         $this->shop = $shop;
-
-        return $this;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Request;
 
 use WechatMiniProgramBundle\Request\WithAccountRequest;
@@ -63,50 +65,40 @@ class CancelOrderRequest extends WithAccountRequest
     /**
      * 设置订单ID
      */
-    public function setOrderId(string $order_id): self
+    public function setOrderId(string $order_id): void
     {
         $this->order_id = $order_id;
-
-        return $this;
     }
 
     /**
      * 设置配送公司ID
      */
-    public function setDeliveryId(string $delivery_id): self
+    public function setDeliveryId(string $delivery_id): void
     {
         $this->delivery_id = $delivery_id;
-
-        return $this;
     }
 
     /**
      * 设置商户ID
      */
-    public function setShopId(string $shop_id): self
+    public function setShopId(string $shop_id): void
     {
         $this->shop_id = $shop_id;
-
-        return $this;
     }
 
     /**
      * 设置取消原因ID
      */
-    public function setCancelReasonId(int $cancel_reason_id): self
+    public function setCancelReasonId(int $cancel_reason_id): void
     {
         $this->cancel_reason_id = $cancel_reason_id;
-
-        return $this;
     }
 
     /**
      * 设置取消原因
      */
-    public function setCancelReason(string $cancel_reason): self
+    public function setCancelReason(string $cancel_reason): void
     {
         $this->cancel_reason = $cancel_reason;
-
-        return $this;
     }
 }

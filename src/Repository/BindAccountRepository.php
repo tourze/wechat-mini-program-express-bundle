@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatMiniProgramExpressBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 use WechatMiniProgramBundle\Entity\Account;
 use WechatMiniProgramExpressBundle\Entity\BindAccount;
 
 /**
  * 即时配送绑定账号仓库
  *
- * @method BindAccount|null find($id, $lockMode = null, $lockVersion = null)
- * @method BindAccount|null findOneBy(array $criteria, array $orderBy = null)
- * @method BindAccount[]    findAll()
- * @method BindAccount[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<BindAccount>
  */
+#[AsRepository(entityClass: BindAccount::class)]
 class BindAccountRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -41,5 +42,23 @@ class BindAccountRepository extends ServiceEntityRepository
     public function findByAccount(Account $account): array
     {
         return $this->findBy(['account' => $account]);
+    }
+
+    public function save(BindAccount $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(BindAccount $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }
