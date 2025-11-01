@@ -2,10 +2,8 @@
 
 namespace WechatMiniProgramExpressBundle\Tests\Request;
 
-use HttpClientBundle\Tests\Request\RequestTestCase;
+use HttpClientBundle\Test\RequestTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use PHPUnit\Framework\TestCase;
 use WechatMiniProgramExpressBundle\Request\PreAddOrderRequest;
 
 /**
