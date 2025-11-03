@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tourze\BundleDependency\BundleDependencyInterface;
 use WechatMiniProgramBundle\WechatMiniProgramBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 
 class WechatMiniProgramExpressBundle extends Bundle implements BundleDependencyInterface
 {
@@ -16,6 +17,7 @@ class WechatMiniProgramExpressBundle extends Bundle implements BundleDependencyI
         return [
             DoctrineBundle::class => ['all' => true],
             WechatMiniProgramBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
     }
 }
