@@ -262,7 +262,6 @@ class AddOrderRequest extends WithAccountRequest
      *
      * @param array<string, mixed> $params
      */
-    // @phpstan-ignore-next-line
     private function addEntityParamsToRequest(array &$params): void
     {
         if (null !== $this->sender) {
@@ -291,7 +290,6 @@ class AddOrderRequest extends WithAccountRequest
      *
      * @param array<string, mixed> $params
      */
-    // @phpstan-ignore-next-line
     private function addOptionalParamsToRequest(array &$params): void
     {
         $optionalFields = [
